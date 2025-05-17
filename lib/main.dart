@@ -1,3 +1,4 @@
+import 'package:chatlytics/pages/analysis_page.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -13,7 +14,7 @@ class MyApp extends StatelessWidget {
       title: 'Chatlytics',
       theme: ThemeData(
       ),
-      home: const Text('Chatlytics Home Page'),
+      home: const AnalysisPage(),
     );
   }
 }
