@@ -11,36 +11,32 @@ class AnalysisPage extends StatefulWidget {
 }
 
 class _AnalysisPageState extends State<AnalysisPage> {
-  final List<bool> _expanded = [true, false, false];
-
-  void _togglePanel(int index) {
-    setState(() {
-      _expanded[index] = !_expanded[index];
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text(
           'Chat Analysis',
-          style: TextStyle(fontWeight: FontWeight.w600, fontSize: 20),
+          style: TextStyle(
+            fontWeight: FontWeight.w600,
+            fontSize: 20,
+            color: Colors.white,
+          ),
         ),
-        backgroundColor: const Color(0xFF128C7E), // Modern WhatsApp green
+        backgroundColor: const Color(0xFF25D366), // WhatsApp light green
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, size: 24),
+          icon: const Icon(Icons.arrow_back, size: 24, color: Colors.white),
           onPressed: () => Navigator.of(context).pop(),
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.more_vert, size: 24),
+            icon: const Icon(Icons.more_vert, size: 24, color: Colors.white),
             onPressed: () {}, // Add functionality as needed
           ),
         ],
       ),
-      backgroundColor: const Color(0xFF121B22), // Dark theme background
+      backgroundColor: Colors.white, // Light theme background
       body: SafeArea(
         child: SingleChildScrollView(
           physics: const BouncingScrollPhysics(),
@@ -53,7 +49,7 @@ class _AnalysisPageState extends State<AnalysisPage> {
                 child: const Text(
                   "Jan 1, 2023 - Apr 30, 2023",
                   style: TextStyle(
-                    color: Colors.white70,
+                    color: Color(0xFF667781), // WhatsApp secondary text color
                     fontSize: 14,
                     fontWeight: FontWeight.w500,
                   ),
@@ -69,7 +65,7 @@ class _AnalysisPageState extends State<AnalysisPage> {
                     Text(
                       "DETAILED INSIGHTS",
                       style: TextStyle(
-                        color: Colors.white,
+                        color: Color(0xFF075E54), // WhatsApp dark green
                         fontSize: 14,
                         fontWeight: FontWeight.bold,
                         letterSpacing: 1.0,
@@ -79,23 +75,23 @@ class _AnalysisPageState extends State<AnalysisPage> {
                 ),
               ),
 
-              _buildAnimatedPanel(
-                0,
+              _buildPanel(
                 "Messages per User",
-                const Color(0xFF075E54), // WhatsApp dark green
+                const Color(0xFFE9EDEF), // Light gray background
                 Icons.people_alt_rounded,
+                _buildMessagesPerUserContent(),
               ),
-              _buildAnimatedPanel(
-                1,
+              _buildPanel(
                 "Top Words",
-                const Color(0xFF075E54),
+                const Color(0xFFE9EDEF),
                 Icons.text_fields_rounded,
+                _buildTopWordsContent(),
               ),
-              _buildAnimatedPanel(
-                2,
+              _buildPanel(
                 "Emoji Analysis",
-                const Color(0xFF075E54),
+                const Color(0xFFE9EDEF),
                 Icons.emoji_emotions_rounded,
+                _buildTopEmojisContent(),
               ),
             ],
           ),
@@ -104,103 +100,54 @@ class _AnalysisPageState extends State<AnalysisPage> {
     );
   }
 
-  Widget _buildAnimatedPanel(
-    int index,
-    String title,
-    Color color,
-    IconData icon,
-  ) {
-    return AnimatedContainer(
-      duration: const Duration(milliseconds: 300),
+  Widget _buildPanel(String title, Color color, IconData icon, Widget content) {
+    return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       decoration: BoxDecoration(
-        color: color.withAlpha(230),
+        color: color,
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withAlpha(51),
+            color: Colors.black.withAlpha(15),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
         ],
       ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          borderRadius: BorderRadius.circular(20),
-          onTap: () => _togglePanel(index),
-          splashColor: Colors.white.withAlpha(26),
-          highlightColor: Colors.white.withAlpha(13),
-          child: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(18),
-                child: Row(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(10),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withAlpha(39),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Icon(icon, color: Colors.white, size: 24),
-                    ),
-                    const SizedBox(width: 16),
-                    Text(
-                      title,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 16,
-                        color: Colors.white,
-                      ),
-                    ),
-                    const Spacer(),
-                    AnimatedRotation(
-                      turns: _expanded[index] ? 0.5 : 0.0,
-                      duration: const Duration(milliseconds: 300),
-                      child: const Icon(
-                        Icons.keyboard_arrow_down_rounded,
-                        color: Colors.white,
-                        size: 28,
-                      ),
-                    ),
-                  ],
+      child: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(18),
+            child: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF25D366), // WhatsApp light green
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Icon(icon, color: Colors.white, size: 24),
                 ),
-              ),
-              AnimatedCrossFade(
-                duration: const Duration(milliseconds: 300),
-                crossFadeState:
-                    _expanded[index]
-                        ? CrossFadeState.showFirst
-                        : CrossFadeState.showSecond,
-                firstChild: Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.fromLTRB(18, 0, 18, 18),
-                  child: _getPanelContent(index),
+                const SizedBox(width: 16),
+                Text(
+                  title,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 16,
+                    color: Color(0xFF075E54), // WhatsApp dark green
+                  ),
                 ),
-                secondChild: const SizedBox(height: 0),
-              ),
-            ],
+              ],
+            ),
           ),
-        ),
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.fromLTRB(18, 0, 18, 18),
+            child: content,
+          ),
+        ],
       ),
     );
-  }
-
-  Widget _getPanelContent(int index) {
-    switch (index) {
-      case 0:
-        return _buildMessagesPerUserContent();
-      case 1:
-        return _buildTopWordsContent();
-      case 2:
-        return _buildTopEmojisContent();
-      default:
-        return const Text(
-          "Unknown Panel",
-          style: TextStyle(color: Colors.white),
-        );
-    }
   }
 
   Widget _buildOverviewTab() {
@@ -222,10 +169,26 @@ class _AnalysisPageState extends State<AnalysisPage> {
       mainAxisSpacing: 16,
       childAspectRatio: 1.5,
       children: [
-        _buildSummaryCard('Total Messages', widget.messageData.messageCount.toString(), Icons.chat_bubble_rounded),
-        _buildSummaryCard('Active Days', widget.messageData.activeDays.toString(), Icons.calendar_today_rounded),
-        _buildSummaryCard('Media Shared', widget.messageData.mediaShared.toString(), Icons.photo_library_rounded),
-        _buildSummaryCard('Participants', widget.messageData.participants.toString(), Icons.people_alt_rounded),
+        _buildSummaryCard(
+          'Total Messages',
+          widget.messageData.messageCount.toString(),
+          Icons.chat_bubble_rounded,
+        ),
+        _buildSummaryCard(
+          'Active Days',
+          widget.messageData.activeDays.toString(),
+          Icons.calendar_today_rounded,
+        ),
+        _buildSummaryCard(
+          'Media Shared',
+          widget.messageData.mediaShared.toString(),
+          Icons.photo_library_rounded,
+        ),
+        _buildSummaryCard(
+          'Participants',
+          widget.messageData.participants.toString(),
+          Icons.people_alt_rounded,
+        ),
       ],
     );
   }
@@ -237,14 +200,14 @@ class _AnalysisPageState extends State<AnalysisPage> {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
+            const Color(0xFF25D366), // WhatsApp light green
             const Color(0xFF128C7E), // WhatsApp green
-            const Color(0xFF075E54), // WhatsApp dark green
           ],
         ),
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF128C7E).withAlpha(77),
+            color: const Color(0xFF128C7E).withAlpha(50),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -305,15 +268,9 @@ class _AnalysisPageState extends State<AnalysisPage> {
 
   Widget _buildMessagesPerUserContent() {
     // Sample data for demonstration
-    final Map<String, int> messageData = {
-      "John": 342,
-      "Alice": 289,
-      "Bob": 178,
-      "Emma": 156,
-    };
+    final Map<String, int> messageData = widget.messageData.userMessagesCount;
 
-    // Calculate total messages
-    final int totalMessages = messageData.values.reduce((a, b) => a + b);
+    int totalMessages = widget.messageData.messageCount;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -330,15 +287,15 @@ class _AnalysisPageState extends State<AnalysisPage> {
                 children: [
                   const Text(
                     "Total Messages",
-                    style: TextStyle(fontSize: 14, color: Colors.white70),
+                    style: TextStyle(fontSize: 14, color: Color(0xFF667781)),
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    "$totalMessages",
+                    widget.messageData.messageCount.toString(),
                     style: const TextStyle(
                       fontSize: 32,
                       fontWeight: FontWeight.bold,
-                      color: Colors.white,
+                      color: Color(0xFF075E54), // WhatsApp dark green
                     ),
                   ),
                 ],
@@ -346,7 +303,7 @@ class _AnalysisPageState extends State<AnalysisPage> {
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: Colors.white.withAlpha(39),
+                  color: const Color(0xFF25D366), // WhatsApp light green
                   borderRadius: BorderRadius.circular(16),
                 ),
                 child: const Icon(
@@ -359,7 +316,7 @@ class _AnalysisPageState extends State<AnalysisPage> {
           ),
         ),
 
-        const Divider(color: Colors.white24, height: 32),
+        const Divider(color: Color(0xFFDCE6E7), height: 32),
 
         // User message breakdown
         ...messageData.entries.map((entry) {
@@ -394,7 +351,7 @@ class _AnalysisPageState extends State<AnalysisPage> {
                           style: const TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w500,
-                            color: Colors.white,
+                            color: Color(0xFF1F2C34), // WhatsApp text color
                           ),
                         ),
                       ],
@@ -405,7 +362,7 @@ class _AnalysisPageState extends State<AnalysisPage> {
                         vertical: 4,
                       ),
                       decoration: BoxDecoration(
-                        color: Colors.white.withAlpha(39),
+                        color: const Color(0xFF25D366).withAlpha(50),
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Text(
@@ -413,7 +370,7 @@ class _AnalysisPageState extends State<AnalysisPage> {
                         style: const TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.bold,
-                          color: Colors.white,
+                          color: Color(0xFF075E54), // WhatsApp dark green
                         ),
                       ),
                     ),
@@ -426,7 +383,7 @@ class _AnalysisPageState extends State<AnalysisPage> {
                       height: 10,
                       width: double.infinity,
                       decoration: BoxDecoration(
-                        color: Colors.white10,
+                        color: const Color(0xFFDCE6E7), // Light gray
                         borderRadius: BorderRadius.circular(8),
                       ),
                     ),
@@ -453,9 +410,9 @@ class _AnalysisPageState extends State<AnalysisPage> {
                 const SizedBox(height: 6),
                 Text(
                   "$userMessages messages",
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 13,
-                    color: Colors.white.withAlpha(179),
+                    color: Color(0xFF667781), // WhatsApp secondary text
                   ),
                 ),
               ],
@@ -516,18 +473,18 @@ class _AnalysisPageState extends State<AnalysisPage> {
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
-                  color: Colors.white,
+                  color: Color(0xFF075E54), // WhatsApp dark green
                 ),
               ),
               Text(
                 "Total Words: 9,873",
-                style: TextStyle(fontSize: 14, color: Colors.white70),
+                style: TextStyle(fontSize: 14, color: Color(0xFF667781)),
               ),
             ],
           ),
         ),
 
-        const Divider(color: Colors.white24, height: 24),
+        const Divider(color: Color(0xFFDCE6E7), height: 24),
 
         ...topWords.asMap().entries.map((entry) {
           final int index = entry.key;
@@ -544,17 +501,17 @@ class _AnalysisPageState extends State<AnalysisPage> {
         Container(
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
-            color: Colors.white.withAlpha(26),
+            color: const Color(0xFFECF3F3), // Very light green-gray
             borderRadius: BorderRadius.circular(12),
           ),
           child: const Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(Icons.info_outline, size: 16, color: Colors.white70),
+              Icon(Icons.info_outline, size: 16, color: Color(0xFF667781)),
               SizedBox(width: 8),
               Text(
                 "Based on 965 messages analyzed",
-                style: TextStyle(fontSize: 14, color: Colors.white70),
+                style: TextStyle(fontSize: 14, color: Color(0xFF667781)),
               ),
             ],
           ),
@@ -598,7 +555,7 @@ class _AnalysisPageState extends State<AnalysisPage> {
                         style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w500,
-                          color: Colors.white,
+                          color: Color(0xFF1F2C34), // WhatsApp text color
                         ),
                       ),
                     ),
@@ -607,7 +564,7 @@ class _AnalysisPageState extends State<AnalysisPage> {
                       style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
-                        color: Colors.white,
+                        color: Color(0xFF075E54), // WhatsApp dark green
                       ),
                     ),
                   ],
@@ -619,7 +576,7 @@ class _AnalysisPageState extends State<AnalysisPage> {
                       height: 8,
                       width: double.infinity,
                       decoration: BoxDecoration(
-                        color: Colors.white10,
+                        color: const Color(0xFFDCE6E7), // Light gray
                         borderRadius: BorderRadius.circular(4),
                       ),
                     ),
@@ -681,13 +638,13 @@ class _AnalysisPageState extends State<AnalysisPage> {
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
-                color: Colors.white,
+                color: Color(0xFF075E54), // WhatsApp dark green
               ),
             ),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
               decoration: BoxDecoration(
-                color: Colors.white.withAlpha(39),
+                color: const Color(0xFF25D366).withAlpha(50),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: const Text(
@@ -695,7 +652,7 @@ class _AnalysisPageState extends State<AnalysisPage> {
                 style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w500,
-                  color: Colors.white,
+                  color: Color(0xFF075E54), // WhatsApp dark green
                 ),
               ),
             ),
@@ -705,32 +662,27 @@ class _AnalysisPageState extends State<AnalysisPage> {
         const SizedBox(height: 20),
 
         // Emoji grid with modern look
-        GridView.builder(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 5,
-            childAspectRatio: 1,
-            crossAxisSpacing: 8,
-            mainAxisSpacing: 16,
-          ),
-          itemCount: topEmojis.length,
-          itemBuilder: (context, index) {
-            return _buildEmojiItem(
+        Wrap(
+          spacing: 12,
+          runSpacing: 16,
+          alignment: WrapAlignment.spaceEvenly,
+          children: List.generate(
+            topEmojis.length,
+            (index) => _buildEmojiItem(
               topEmojis[index]["emoji"],
               topEmojis[index]["count"],
               index,
-            );
-          },
+            ),
+          ),
         ),
 
-        const SizedBox(height: 16),
+        const SizedBox(height: 20),
 
         // Emoji statistics
         Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: Colors.white.withAlpha(26),
+            color: const Color(0xFFECF3F3), // Very light green-gray
             borderRadius: BorderRadius.circular(16),
           ),
           child: Column(
@@ -740,7 +692,7 @@ class _AnalysisPageState extends State<AnalysisPage> {
                 children: [
                   Icon(
                     Icons.emoji_emotions_rounded,
-                    color: Colors.white70,
+                    color: Color(0xFF667781),
                     size: 16,
                   ),
                   SizedBox(width: 8),
@@ -749,7 +701,7 @@ class _AnalysisPageState extends State<AnalysisPage> {
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.bold,
-                      color: Colors.white,
+                      color: Color(0xFF075E54), // WhatsApp dark green
                     ),
                   ),
                 ],
@@ -759,7 +711,7 @@ class _AnalysisPageState extends State<AnalysisPage> {
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   _buildEmojiStat("0.54", "Per Message"),
-                  Container(height: 24, width: 1, color: Colors.white24),
+                  Container(height: 24, width: 1, color: Color(0xFFDCE6E7)),
                   _buildEmojiStat("42%", "Of Messages"),
                 ],
               ),
@@ -778,13 +730,13 @@ class _AnalysisPageState extends State<AnalysisPage> {
           style: const TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.bold,
-            color: Colors.white,
+            color: Color(0xFF075E54), // WhatsApp dark green
           ),
         ),
         const SizedBox(height: 4),
         Text(
           label,
-          style: const TextStyle(fontSize: 12, color: Colors.white70),
+          style: const TextStyle(fontSize: 12, color: Color(0xFF667781)),
         ),
       ],
     );
@@ -803,9 +755,16 @@ class _AnalysisPageState extends State<AnalysisPage> {
         Container(
           padding: const EdgeInsets.all(10),
           decoration: BoxDecoration(
-            color: Colors.white.withAlpha(26),
+            color: Colors.white,
             borderRadius: BorderRadius.circular(16),
             border: Border.all(color: borderColor, width: 2),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withAlpha(10),
+                blurRadius: 4,
+                offset: const Offset(0, 2),
+              ),
+            ],
           ),
           child: Text(emoji, style: const TextStyle(fontSize: 24)),
         ),
@@ -814,7 +773,7 @@ class _AnalysisPageState extends State<AnalysisPage> {
           count.toString(),
           style: const TextStyle(
             fontWeight: FontWeight.bold,
-            color: Colors.white,
+            color: Color(0xFF1F2C34), // WhatsApp text color
             fontSize: 12,
           ),
         ),
