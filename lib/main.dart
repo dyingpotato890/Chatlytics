@@ -1,4 +1,4 @@
-import 'package:chatlytics/pages/analysis_page.dart';
+import 'package:chatlytics/pages/home_page.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -11,10 +11,11 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Chatlytics',
       theme: ThemeData(
       ),
-      home: const AnalysisPage(),
+      home: const HomePage(),
     );
   }
 }
