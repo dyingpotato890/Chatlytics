@@ -1,5 +1,6 @@
 import 'package:chatlytics/models/data.dart';
 import 'package:flutter/material.dart';
+import 'dart:math';
 
 class AnalysisPage extends StatefulWidget {
   final Data messageData;
@@ -85,7 +86,7 @@ class _AnalysisPageState extends State<AnalysisPage> {
               _buildFirstLastMessagePanel(),
 
               _buildPanel(
-                "Top Words",
+                "Top 100 Words",
                 const Color(0xFFE9EDEF),
                 Icons.text_fields_rounded,
                 _buildTopWordsContent(),
@@ -556,24 +557,22 @@ class _AnalysisPageState extends State<AnalysisPage> {
   }
 
   Widget _buildTopWordsContent() {
-    // Sample data for demonstration
-    final List<Map<String, dynamic>> topWords = [
-      {"word": "haha", "count": 245},
-      {"word": "ok", "count": 189},
-      {"word": "cool", "count": 156},
-      {"word": "yes", "count": 134},
-      {"word": "thanks", "count": 98},
-    ];
+    // Get word data from the actual data source
+    final Map<String, int> topWords = widget.messageData.mostUsedWords;
+
+    // Get top words
+    final List<MapEntry<String, int>> topWordsList =
+        topWords.entries.take(100).toList();
 
     return Column(
       children: [
         // Introduction section
         Container(
           padding: const EdgeInsets.only(bottom: 12),
-          child: const Row(
+          child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
+              const Text(
                 "Most Used Words",
                 style: TextStyle(
                   fontSize: 16,
@@ -582,8 +581,8 @@ class _AnalysisPageState extends State<AnalysisPage> {
                 ),
               ),
               Text(
-                "Total Words: 9,873",
-                style: TextStyle(fontSize: 14, color: Color(0xFF667781)),
+                "Total Words: ${widget.messageData.wordCount}",
+                style: const TextStyle(fontSize: 14, color: Color(0xFF667781)),
               ),
             ],
           ),
@@ -591,32 +590,142 @@ class _AnalysisPageState extends State<AnalysisPage> {
 
         const Divider(color: Color(0xFFDCE6E7), height: 24),
 
-        ...topWords.asMap().entries.map((entry) {
-          final int index = entry.key;
-          final Map<String, dynamic> wordData = entry.value;
-          return _buildWordItem(
-            wordData["word"],
-            wordData["count"],
-            (wordData["count"] / topWords.first["count"]) * 0.85 + 0.15,
-            index: index,
-          );
-        }),
+        // Top 3 Words with special highlight
+        if (topWordsList.isNotEmpty)
+          Container(
+            margin: const EdgeInsets.only(bottom: 16),
+            child: Row(
+              children: List.generate(
+                min(3, topWordsList.length),
+                (index) => Expanded(
+                  child: _buildTopWordCard(
+                    topWordsList[index].key,
+                    topWordsList[index].value,
+                    index,
+                  ),
+                ),
+              ),
+            ),
+          ),
+
+        // Word cloud for remaining words
+        if (topWordsList.length > 3)
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(12),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withAlpha(10),
+                  blurRadius: 4,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  "Other Frequent Words",
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                    color: Color(0xFF075E54),
+                  ),
+                ),
+
+                const SizedBox(height: 12),
+                
+                Column(
+                  children: List.generate(
+                    min(100, topWordsList.length - 3),
+                    (index) {
+                      final word = topWordsList[index + 3].key;
+                      final count = topWordsList[index + 3].value;
+                      final maxCount =
+                          topWordsList[2].value
+                              .toDouble();
+
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 4),
+                        child: Row(
+                          children: [
+                            SizedBox(
+                              width: 60,
+                              child: Text(
+                                word,
+                                style: const TextStyle(
+                                  fontSize: 12,
+                                  color: Color(0xFF075E54),
+                                  fontWeight: FontWeight.w500,
+                                ),
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+
+                            const SizedBox(width: 8),
+
+                            Expanded(
+                              child: Stack(
+                                children: [
+                                  Container(
+                                    height: 14,
+                                    decoration: BoxDecoration(
+                                      color: const Color(0xFFE0F2F1),
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                  ),
+                                  FractionallySizedBox(
+                                    widthFactor: count / maxCount,
+                                    child: Container(
+                                      height: 14,
+                                      decoration: BoxDecoration(
+                                        color: const Color(0xFF25D366),
+                                        borderRadius: BorderRadius.circular(8),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            Text(
+                              count.toString(),
+                              style: const TextStyle(
+                                fontSize: 12,
+                                color: Color(0xFF667781),
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ),
 
         const SizedBox(height: 12),
         Container(
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
-            color: const Color(0xFFECF3F3), // Very light green-gray
+            color: const Color(0xFFECF3F3),
             borderRadius: BorderRadius.circular(12),
           ),
-          child: const Row(
+          child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(Icons.info_outline, size: 16, color: Color(0xFF667781)),
-              SizedBox(width: 8),
+              const Icon(
+                Icons.info_outline,
+                size: 16,
+                color: Color(0xFF667781),
+              ),
+              const SizedBox(width: 8),
               Text(
-                "Based on 965 messages analyzed",
-                style: TextStyle(fontSize: 14, color: Color(0xFF667781)),
+                "Based on ${widget.messageData.messageCount} messages analyzed",
+                style: const TextStyle(fontSize: 14, color: Color(0xFF667781)),
               ),
             ],
           ),
@@ -625,102 +734,75 @@ class _AnalysisPageState extends State<AnalysisPage> {
     );
   }
 
-  Widget _buildWordItem(
-    String word,
-    int count,
-    double ratio, {
-    required int index,
-  }) {
+  Widget _buildTopWordCard(String word, int count, int index) {
+    final List<Color> medalColors = [
+      const Color(0xFFFFD700), // Gold
+      const Color(0xFFC0C0C0), // Silver
+      const Color(0xFFCD7F32), // Bronze
+    ];
+
+    final List<Color> bgColors = [
+      const Color(0xFFFFF9E6), // Light gold
+      const Color(0xFFF8F8F8), // Light silver
+      const Color(0xFFFFF1E6), // Light bronze
+    ];
+
     return Container(
-      margin: const EdgeInsets.symmetric(vertical: 8.0),
-      child: Row(
+      margin: const EdgeInsets.symmetric(horizontal: 4),
+      padding: const EdgeInsets.all(10),
+      decoration: BoxDecoration(
+        color: bgColors[index],
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: medalColors[index].withOpacity(0.2),
+            blurRadius: 4,
+            offset: const Offset(0, 2),
+          ),
+        ],
+        border: Border.all(color: medalColors[index].withOpacity(0.3)),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
+          // Medal icon
           Container(
-            width: 26,
-            alignment: Alignment.center,
-            child: Text(
-              "${index + 1}",
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: _getMedalColor(index),
-              ),
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: medalColors[index].withOpacity(0.2),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              Icons.emoji_events_rounded,
+              color: medalColors[index],
+              size: 18,
             ),
           ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        word,
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w500,
-                          color: Color(0xFF1F2C34), // WhatsApp text color
-                        ),
-                      ),
-                    ),
-                    Text(
-                      count.toString(),
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xFF075E54), // WhatsApp dark green
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 6),
-                Stack(
-                  children: [
-                    Container(
-                      height: 8,
-                      width: double.infinity,
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFDCE6E7), // Light gray
-                        borderRadius: BorderRadius.circular(4),
-                      ),
-                    ),
-                    AnimatedContainer(
-                      duration: const Duration(milliseconds: 800),
-                      curve: Curves.easeOutQuart,
-                      height: 8,
-                      width: MediaQuery.of(context).size.width * ratio * 0.7,
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: [
-                            _getMedalColor(index),
-                            _getMedalColor(index).withAlpha(179),
-                          ],
-                        ),
-                        borderRadius: BorderRadius.circular(4),
-                      ),
-                    ),
-                  ],
-                ),
-              ],
+          const SizedBox(height: 8),
+          // Word
+          Text(
+            word,
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.bold,
+              color: medalColors[index].withOpacity(0.8),
+            ),
+            textAlign: TextAlign.center,
+            overflow: TextOverflow.ellipsis,
+          ),
+          const SizedBox(height: 4),
+          // Count
+          Text(
+            count.toString(),
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: const Color(0xFF075E54).withOpacity(0.9),
             ),
           ),
         ],
       ),
     );
-  }
-
-  Color _getMedalColor(int index) {
-    switch (index) {
-      case 0:
-        return const Color(0xFFFFD700); // Gold
-      case 1:
-        return const Color(0xFFC0C0C0); // Silver
-      case 2:
-        return const Color(0xFFCD7F32); // Bronze
-      default:
-        return const Color(0xFF25D366); // WhatsApp green
-    }
   }
 
   Widget _buildTopEmojisContent() {
@@ -733,7 +815,7 @@ class _AnalysisPageState extends State<AnalysisPage> {
       totalEmojis += count;
     });
 
-    // Get top emojis (limited to 10 for display)
+    // Get top emojis
     final List<MapEntry<String, int>> topEmojisList =
         topEmojis.entries.toList();
 

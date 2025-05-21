@@ -182,24 +182,20 @@ class Whatsapp {
         if (mediaRegex.hasMatch(message)) {
           messageData.mediaShared++;
         } else {
-          // Count words
-          List<String> words = message.split(RegExp(r'\s+'));
+          // Extract words
+          List<String> words =
+              RegExp(r'\b\w+\b')
+                  .allMatches(message)
+                  .map((match) => match.group(0)!.toLowerCase())
+                  .toList();
+
           messageData.wordCount += words.length;
 
-          // Process most used words
           for (String word in words) {
-            String cleanWord = word.toLowerCase().replaceAll(
-              RegExp(r'[^\w\s]'),
-              '',
-            );
-            if (cleanWord.isNotEmpty && cleanWord.length > 3) {
-              // Skip very short words
-              if (!messageData.mostUsedWords.containsKey(cleanWord)) {
-                messageData.mostUsedWords[cleanWord] = 1;
-              } else {
-                messageData.mostUsedWords[cleanWord] =
-                    messageData.mostUsedWords[cleanWord]! + 1;
-              }
+            // Filter short words
+            if (word.length > 3) {
+              messageData.mostUsedWords[word] =
+                  (messageData.mostUsedWords[word] ?? 0) + 1;
             }
           }
 
