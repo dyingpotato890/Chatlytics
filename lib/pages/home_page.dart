@@ -30,6 +30,7 @@ class _HomePageState extends State<HomePage> {
     mostUsedEmojies: {},
     mostTalkedDays: {},
     mostTalkedHours: {},
+    monthCount: {},
     firstMessage: Message(date: '', time: '', sender: '', message: ''),
     lastMessage: Message(date: '', time: '', sender: '', message: ''),
   );

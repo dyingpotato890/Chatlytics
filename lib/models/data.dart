@@ -13,6 +13,7 @@ class Data {
   Map<String, int> mostUsedEmojies;
   Map<String, int> mostTalkedDays;
   Map<String, int> mostTalkedHours;
+  Map<String, int> monthCount;
 
   Data({
     required this.messageCount,
@@ -27,5 +28,6 @@ class Data {
     required this.mostUsedEmojies,
     required this.mostTalkedDays,
     required this.mostTalkedHours,
+    required this.monthCount,
   });
 }

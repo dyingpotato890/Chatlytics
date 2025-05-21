@@ -38,6 +38,7 @@ class Whatsapp {
     mostUsedEmojies: {},
     mostTalkedDays: {},
     mostTalkedHours: {},
+    monthCount: {},
     firstMessage: Message(date: '', time: '', sender: '', message: ''),
     lastMessage: Message(date: '', time: '', sender: '', message: ''),
   );
@@ -154,6 +155,7 @@ class Whatsapp {
 
       // Process date and time metrics
       String dayKey = date;
+      String monthKey = date.split('/')[1];
       String hourKey = time.split(':')[0];
 
       // Track unique days
@@ -174,6 +176,14 @@ class Whatsapp {
       } else {
         messageData.mostTalkedHours[hourKey] =
             messageData.mostTalkedHours[hourKey]! + 1;
+      }
+
+      // Chat by Month
+      if (!messageData.monthCount.containsKey(monthKey)) {
+        messageData.monthCount[monthKey] = 1;
+      } else {
+        messageData.monthCount[monthKey] =
+            messageData.monthCount[monthKey]! + 1;
       }
 
       // Process message content if available
