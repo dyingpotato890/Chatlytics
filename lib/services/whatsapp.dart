@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:chatlytics/models/data.dart';
+import 'package:chatlytics/models/message.dart';
 import 'package:flutter_archive/flutter_archive.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -38,6 +39,8 @@ class Whatsapp {
     mostUsedEmojies: {},
     mostTalkedDays: {},
     mostTalkedHours: {},
+    firstMessage: Message(date: '', time: '', sender: '', message: ''),
+    lastMessage: Message(date: '', time: '', sender: '', message: ''),
   );
 
   final Set<String> uniqueDays = {};
@@ -89,14 +92,16 @@ class Whatsapp {
     }
 
     // Standard system message
-    if (sender == "Messages and calls are end-to-end encrypted. Only people in this chat can read, listen to, or share them. Learn more." ||
+    if (sender ==
+            "Messages and calls are end-to-end encrypted. Only people in this chat can read, listen to, or share them. Learn more." ||
         sender == "You pinned a message") {
       return true;
     }
 
     // Check specific system message
-    if (message == "left" || message == "joined" || 
-        message == "You pinned a message" || 
+    if (message == "left" ||
+        message == "joined" ||
+        message == "You pinned a message" ||
         message.startsWith("changed the subject") ||
         message.startsWith("changed this group's icon") ||
         sender.startsWith("added ") ||
@@ -117,6 +122,24 @@ class Whatsapp {
     bool isSystem = isSystemMessage(sender, message);
 
     if (!isSystem) {
+      // First Message
+      if (messageData.messageCount == 0) {
+        messageData.firstMessage = Message(
+          date: date,
+          time: time,
+          sender: sender,
+          message: message ?? '',
+        );
+      }
+
+      // Last Message
+      messageData.lastMessage = Message(
+        date: date,
+        time: time,
+        sender: sender,
+        message: message ?? '',
+      );
+      
       messageData.messageCount++;
 
       uniqueParticipants.add(sender);
@@ -209,7 +232,7 @@ class Whatsapp {
 
         for (var line in content) {
           if (messageLineRegex.hasMatch(line)) {
-            // If we were processing a multiline message, finalize it before starting new one
+            // Processing a multiline message, finalize it before starting new one
             if (inMultiLineMessage &&
                 currentDate != null &&
                 currentSender != null) {

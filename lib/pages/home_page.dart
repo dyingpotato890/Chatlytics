@@ -1,4 +1,5 @@
 import 'package:chatlytics/models/data.dart';
+import 'package:chatlytics/models/message.dart';
 import 'package:chatlytics/services/whatsapp.dart';
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
@@ -29,6 +30,8 @@ class _HomePageState extends State<HomePage> {
     mostUsedEmojies: {},
     mostTalkedDays: {},
     mostTalkedHours: {},
+    firstMessage: Message(date: '', time: '', sender: '', message: ''),
+    lastMessage: Message(date: '', time: '', sender: '', message: ''),
   );
 
   Future<void> _pickFile() async {
@@ -52,10 +55,12 @@ class _HomePageState extends State<HomePage> {
         print('Message Count: ${attributes.messageCount}');
         print('Active Days: ${attributes.activeDays}');
         print('Media Shared: ${attributes.mediaShared}');
-        print('Media Shared: ${attributes.participants}');
+        print('Participants: ${attributes.participants}');
         print('Most Talked Days: ${attributes.mostTalkedDays}');
         print('Most Talked Hours: ${attributes.mostTalkedHours}');
         print('User Messages Count: ${attributes.userMessagesCount}');
+        print('First Message: ${attributes.firstMessage.message}');
+        print('Last Message: ${attributes.lastMessage.message}');
       }
     } catch (e) {
       // Handle any errors

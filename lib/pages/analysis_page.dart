@@ -46,8 +46,8 @@ class _AnalysisPageState extends State<AnalysisPage> {
               Container(
                 padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
                 alignment: Alignment.centerLeft,
-                child: const Text(
-                  "Jan 1, 2023 - Apr 30, 2023",
+                child: Text(
+                  "${widget.messageData.firstMessage.date} - ${widget.messageData.lastMessage.date}",
                   style: TextStyle(
                     color: Color(0xFF667781), // WhatsApp secondary text color
                     fontSize: 14,
@@ -81,12 +81,16 @@ class _AnalysisPageState extends State<AnalysisPage> {
                 Icons.people_alt_rounded,
                 _buildMessagesPerUserContent(),
               ),
+
+              _buildFirstLastMessagePanel(),
+
               _buildPanel(
                 "Top Words",
                 const Color(0xFFE9EDEF),
                 Icons.text_fields_rounded,
                 _buildTopWordsContent(),
               ),
+
               _buildPanel(
                 "Emoji Analysis",
                 const Color(0xFFE9EDEF),
@@ -155,61 +159,35 @@ class _AnalysisPageState extends State<AnalysisPage> {
       padding: const EdgeInsets.all(16.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: [_buildSummaryCards()],
+        children: [
+          // Featured metric - Total Messages
+          _buildFeaturedMetricCard(),
+          const SizedBox(height: 16),
+          // Secondary metrics in a row
+          _buildSecondaryMetricsRow(),
+        ],
       ),
     );
   }
 
-  Widget _buildSummaryCards() {
-    return GridView.count(
-      crossAxisCount: 2,
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      crossAxisSpacing: 16,
-      mainAxisSpacing: 16,
-      childAspectRatio: 1.5,
-      children: [
-        _buildSummaryCard(
-          'Total Messages',
-          widget.messageData.messageCount.toString(),
-          Icons.chat_bubble_rounded,
-        ),
-        _buildSummaryCard(
-          'Active Days',
-          widget.messageData.activeDays.toString(),
-          Icons.calendar_today_rounded,
-        ),
-        _buildSummaryCard(
-          'Media Shared',
-          widget.messageData.mediaShared.toString(),
-          Icons.photo_library_rounded,
-        ),
-        _buildSummaryCard(
-          'Participants',
-          widget.messageData.participants.toString(),
-          Icons.people_alt_rounded,
-        ),
-      ],
-    );
-  }
-
-  Widget _buildSummaryCard(String title, String value, IconData icon) {
+  Widget _buildFeaturedMetricCard() {
     return Container(
+      width: double.infinity,
       decoration: BoxDecoration(
-        gradient: LinearGradient(
+        gradient: const LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            const Color(0xFF25D366), // WhatsApp light green
-            const Color(0xFF128C7E), // WhatsApp green
+            Color(0xFF25D366), // WhatsApp light green
+            Color(0xFF075E54), // WhatsApp dark green
           ],
         ),
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
             color: const Color(0xFF128C7E).withAlpha(50),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
+            blurRadius: 12,
+            offset: const Offset(0, 5),
           ),
         ],
       ),
@@ -217,51 +195,178 @@ class _AnalysisPageState extends State<AnalysisPage> {
         color: Colors.transparent,
         child: InkWell(
           borderRadius: BorderRadius.circular(24),
-          onTap: () {}, // Add specific functionality when cards are tapped
+          onTap: () {}, // Add functionality when card is tapped
           splashColor: Colors.white.withAlpha(26),
           highlightColor: Colors.white.withAlpha(13),
           child: Padding(
-            padding: const EdgeInsets.all(16.0),
+            padding: const EdgeInsets.all(20.0),
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(
-                      title,
-                      style: const TextStyle(
-                        fontSize: 14,
+                    const Text(
+                      "Total Messages",
+                      style: TextStyle(
+                        fontSize: 18,
                         fontWeight: FontWeight.w500,
                         color: Colors.white,
                       ),
                     ),
                     Container(
-                      padding: const EdgeInsets.all(8),
+                      padding: const EdgeInsets.all(10),
                       decoration: BoxDecoration(
                         color: Colors.white.withAlpha(51),
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(14),
                       ),
-                      child: Icon(icon, size: 18, color: Colors.white),
+                      child: const Icon(
+                        Icons.chat_bubble_rounded,
+                        size: 24,
+                        color: Colors.white,
+                      ),
                     ),
                   ],
                 ),
-                const SizedBox(height: 8),
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    value,
-                    style: const TextStyle(
-                      fontSize: 28,
-                      fontWeight: FontWeight.w700,
-                      color: Colors.white,
+                const SizedBox(height: 16),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Text(
+                      widget.messageData.messageCount.toString(),
+                      style: const TextStyle(
+                        fontSize: 48,
+                        fontWeight: FontWeight.w800,
+                        color: Colors.white,
+                      ),
                     ),
+                    const SizedBox(width: 12),
+                    const Padding(
+                      padding: EdgeInsets.only(bottom: 8.0),
+                      child: Text(
+                        "messages",
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w400,
+                          color: Colors.white70,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 8,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withAlpha(38),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(
+                        Icons.date_range,
+                        size: 16,
+                        color: Colors.white,
+                      ),
+                      const SizedBox(width: 6),
+                      Text(
+                        "Over ${widget.messageData.activeDays} days",
+                        style: const TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ],
             ),
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildSecondaryMetricsRow() {
+    return Row(
+      children: [
+        Expanded(
+          child: _buildSecondaryMetricCard(
+            'Active Days',
+            widget.messageData.activeDays.toString(),
+            Icons.calendar_today_rounded,
+          ),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: _buildSecondaryMetricCard(
+            'Media Shared',
+            widget.messageData.mediaShared.toString(),
+            Icons.photo_library_rounded,
+          ),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: _buildSecondaryMetricCard(
+            'Participants',
+            widget.messageData.participants.toString(),
+            Icons.people_alt_rounded,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildSecondaryMetricCard(String title, String value, IconData icon) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: const Color(0xFFE9EDEF), // Light gray background
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withAlpha(10),
+            blurRadius: 6,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: const Color(
+                0xFF25D366,
+              ).withAlpha(50), // WhatsApp light green with opacity
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Icon(icon, size: 18, color: const Color(0xFF075E54)),
+          ),
+          const SizedBox(height: 12),
+          Text(
+            value,
+            style: const TextStyle(
+              fontSize: 22,
+              fontWeight: FontWeight.w700,
+              color: Color(0xFF075E54), // WhatsApp dark green
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            title,
+            style: const TextStyle(
+              fontSize: 13,
+              color: Color(0xFF667781), // WhatsApp secondary text
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -778,6 +883,140 @@ class _AnalysisPageState extends State<AnalysisPage> {
           ),
         ),
       ],
+    );
+  }
+
+  Widget _buildFirstLastMessagePanel() {
+    return _buildPanel(
+      "First & Last Messages",
+      const Color(0xFFE9EDEF),
+      Icons.history_rounded,
+      _buildFirstLastMessageContent(),
+    );
+  }
+
+  Widget _buildFirstLastMessageContent() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // First message
+        const Text(
+          "First Message",
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+            color: Color(0xFF075E54), // WhatsApp dark green
+          ),
+        ),
+        const SizedBox(height: 12),
+        _buildMessageCard(
+          widget.messageData.firstMessage.sender,
+          widget.messageData.firstMessage.date,
+          widget.messageData.firstMessage.time,
+          widget.messageData.firstMessage.message,
+        ),
+
+        const SizedBox(height: 24),
+        const Divider(color: Color.fromARGB(255, 180, 182, 182)),
+        const SizedBox(height: 16),
+
+        // Last message
+        const Text(
+          "Last Message",
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+            color: Color(0xFF075E54), // WhatsApp dark green
+          ),
+        ),
+        const SizedBox(height: 12),
+
+        _buildMessageCard(
+          widget.messageData.lastMessage.sender,
+          widget.messageData.lastMessage.date,
+          widget.messageData.lastMessage.time,
+          widget.messageData.lastMessage.message,
+        ),
+      ],
+    );
+  }
+
+  Widget _buildMessageCard(
+    String sender,
+    String date,
+    String time,
+    String message,
+  ) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withAlpha(15),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              CircleAvatar(
+                radius: 18,
+                backgroundColor: _getAvatarColor(sender),
+                child: Text(
+                  sender.isNotEmpty ? sender[0] : "?",
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      sender,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        color: Color(0xFF1F2C34), // WhatsApp text color
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      "$date • $time",
+                      style: const TextStyle(
+                        fontSize: 12,
+                        color: Color(0xFF667781), // WhatsApp secondary text
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: const Color(0xFFF0F0F0),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Text(
+              message,
+              style: const TextStyle(fontSize: 14, color: Color(0xFF1F2C34)),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

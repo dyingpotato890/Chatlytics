@@ -1,3 +1,5 @@
+import 'package:chatlytics/models/message.dart';
+
 class Data {
   int messageCount;
   int wordCount;
@@ -5,6 +7,8 @@ class Data {
   int mediaShared;
   int activeDays;
   int participants;
+  Message firstMessage;
+  Message lastMessage;
   Map<String, int> mostUsedWords;
   Map<String, int> mostUsedEmojies;
   Map<String, int> mostTalkedDays;
@@ -17,6 +21,8 @@ class Data {
     required this.mediaShared,
     required this.activeDays,
     required this.participants,
+    required this.firstMessage,
+    required this.lastMessage,
     required this.mostUsedWords,
     required this.mostUsedEmojies,
     required this.mostTalkedDays,
