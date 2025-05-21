@@ -724,14 +724,18 @@ class _AnalysisPageState extends State<AnalysisPage> {
   }
 
   Widget _buildTopEmojisContent() {
-    // Sample data for demonstration
-    final List<Map<String, dynamic>> topEmojis = [
-      {"emoji": "😂", "count": 176},
-      {"emoji": "👍", "count": 145},
-      {"emoji": "❤️", "count": 89},
-      {"emoji": "😊", "count": 67},
-      {"emoji": "🎉", "count": 43},
-    ];
+    // Get emoji data from the actual data source
+    final Map<String, int> topEmojis = widget.messageData.mostUsedEmojies;
+
+    // Calculate total emojis
+    int totalEmojis = 0;
+    topEmojis.forEach((_, count) {
+      totalEmojis += count;
+    });
+
+    // Get top emojis (limited to 10 for display)
+    final List<MapEntry<String, int>> topEmojisList =
+        topEmojis.entries.toList();
 
     return Column(
       children: [
@@ -752,9 +756,9 @@ class _AnalysisPageState extends State<AnalysisPage> {
                 color: const Color(0xFF25D366).withAlpha(50),
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: const Text(
-                "520 Total",
-                style: TextStyle(
+              child: Text(
+                "$totalEmojis Total",
+                style: const TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w500,
                   color: Color(0xFF075E54), // WhatsApp dark green
@@ -767,62 +771,85 @@ class _AnalysisPageState extends State<AnalysisPage> {
         const SizedBox(height: 20),
 
         // Emoji grid with modern look
-        Wrap(
-          spacing: 12,
-          runSpacing: 16,
-          alignment: WrapAlignment.spaceEvenly,
-          children: List.generate(
-            topEmojis.length,
-            (index) => _buildEmojiItem(
-              topEmojis[index]["emoji"],
-              topEmojis[index]["count"],
-              index,
+        topEmojisList.isNotEmpty
+            ? Wrap(
+              spacing: 12,
+              runSpacing: 16,
+              alignment: WrapAlignment.spaceEvenly,
+              children: List.generate(
+                topEmojisList.length,
+                (index) => _buildEmojiItem(
+                  topEmojisList[index].key,
+                  topEmojisList[index].value,
+                  index,
+                ),
+              ),
+            )
+            : const Center(
+              child: Padding(
+                padding: EdgeInsets.symmetric(vertical: 30.0),
+                child: Text(
+                  "No emojis found in chat",
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: Color(0xFF667781),
+                    fontStyle: FontStyle.italic,
+                  ),
+                ),
+              ),
             ),
-          ),
-        ),
 
         const SizedBox(height: 20),
 
         // Emoji statistics
-        Container(
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: const Color(0xFFECF3F3), // Very light green-gray
-            borderRadius: BorderRadius.circular(16),
-          ),
-          child: Column(
-            children: [
-              const Row(
-                mainAxisAlignment: MainAxisAlignment.center,
+        topEmojisList.isNotEmpty
+            ? Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: const Color(0xFFECF3F3), // Very light green-gray
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Column(
                 children: [
-                  Icon(
-                    Icons.emoji_emotions_rounded,
-                    color: Color(0xFF667781),
-                    size: 16,
+                  const Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.emoji_emotions_rounded,
+                        color: Color(0xFF667781),
+                        size: 16,
+                      ),
+                      SizedBox(width: 8),
+                      Text(
+                        "Emoji Stats",
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF075E54), // WhatsApp dark green
+                        ),
+                      ),
+                    ],
                   ),
-                  SizedBox(width: 8),
-                  Text(
-                    "Emoji Stats",
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFF075E54), // WhatsApp dark green
-                    ),
+                  const SizedBox(height: 12),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      _buildEmojiStat(
+                        (totalEmojis / widget.messageData.messageCount)
+                            .toStringAsFixed(2),
+                        "Per Message",
+                      ),
+                      Container(height: 24, width: 1, color: Color(0xFFDCE6E7)),
+                      _buildEmojiStat(
+                        "${((widget.messageData.messageCount > 0) ? (totalEmojis / widget.messageData.messageCount * 100).round() : 0)}%",
+                        "Of Messages",
+                      ),
+                    ],
                   ),
                 ],
               ),
-              const SizedBox(height: 12),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  _buildEmojiStat("0.54", "Per Message"),
-                  Container(height: 24, width: 1, color: Color(0xFFDCE6E7)),
-                  _buildEmojiStat("42%", "Of Messages"),
-                ],
-              ),
-            ],
-          ),
-        ),
+            )
+            : const SizedBox.shrink(),
       ],
     );
   }
@@ -849,11 +876,6 @@ class _AnalysisPageState extends State<AnalysisPage> {
 
   Widget _buildEmojiItem(String emoji, int count, int index) {
     Color borderColor = Colors.transparent;
-
-    // Add special color for top 3
-    if (index < 3) {
-      borderColor = _getMedalColor(index);
-    }
 
     return Column(
       children: [
