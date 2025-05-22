@@ -112,7 +112,7 @@ class MostTalkedHoursWidget extends StatelessWidget {
         // Hours summary header
         Container(
           width: double.infinity,
-          padding: const EdgeInsets.symmetric(vertical: 16),
+          padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 5),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -158,6 +158,7 @@ class MostTalkedHoursWidget extends StatelessWidget {
         // Create time slots grouping for better visualization
         Container(
           margin: const EdgeInsets.only(bottom: 16),
+          padding: const EdgeInsets.symmetric(horizontal: 5),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -260,6 +261,7 @@ class MostTalkedHoursWidget extends StatelessWidget {
 
           return Container(
             margin: const EdgeInsets.only(bottom: 16),
+            padding: const EdgeInsets.symmetric(vertical: 2, horizontal: 5),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -268,7 +270,7 @@ class MostTalkedHoursWidget extends StatelessWidget {
                     Container(
                       padding: const EdgeInsets.all(8),
                       decoration: BoxDecoration(
-                        color: ColorUtils.whatsappSecondaryText.withAlpha(30),
+                        color: ColorUtils.whatsappLightGreen.withAlpha(26),
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: Icon(

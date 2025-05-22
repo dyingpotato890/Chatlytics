@@ -77,7 +77,8 @@ class MostTalkedDaysWidget extends StatelessWidget {
           ),
         ),
 
-        const Divider(color: ColorUtils.whatsappDivider, height: 32),
+        const Divider(color: ColorUtils.whatsappDivider, height: 20),
+        SizedBox(height: 10,),
 
         // Days breakdown
         ...sortedDays.take(7).map((entry) {
@@ -87,6 +88,7 @@ class MostTalkedDaysWidget extends StatelessWidget {
 
           return Container(
             margin: const EdgeInsets.only(bottom: 16),
+            padding: EdgeInsets.symmetric(horizontal: 10),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -95,7 +97,7 @@ class MostTalkedDaysWidget extends StatelessWidget {
                     Container(
                       padding: const EdgeInsets.all(8),
                       decoration: BoxDecoration(
-                        color: ColorUtils.whatsappSecondaryText.withAlpha(30),
+                        color: ColorUtils.whatsappLightGreen.withAlpha(26),
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: const Icon(

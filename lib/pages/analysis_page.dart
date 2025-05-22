@@ -1,4 +1,5 @@
 import 'package:chatlytics/models/data.dart';
+import 'package:chatlytics/widgets/chats_per_week.dart';
 import 'package:chatlytics/widgets/chats_per_year.dart';
 import 'package:chatlytics/widgets/colors.dart';
 import 'package:chatlytics/widgets/emoji_analysis.dart';
@@ -6,7 +7,7 @@ import 'package:chatlytics/widgets/first_last_message.dart';
 import 'package:chatlytics/widgets/messages_per_user.dart';
 import 'package:chatlytics/widgets/most_talked_days.dart';
 import 'package:chatlytics/widgets/most_talked_hours.dart';
-import 'package:chatlytics/widgets/most_talked_months.dart';
+import 'package:chatlytics/widgets/chats_per_months.dart';
 import 'package:chatlytics/widgets/overview.dart';
 import 'package:chatlytics/widgets/panel.dart';
 import 'package:chatlytics/widgets/top_words.dart';
@@ -135,6 +136,14 @@ class _AnalysisPageState extends State<AnalysisPage> {
                 color: ColorUtils.whatsappLightBackground,
                 icon: Icons.calendar_today_rounded,
                 content: MostTalkedDaysWidget(messageData: widget.messageData),
+              ),
+
+              // Week Analysis
+              PanelWidget(
+                title: "Weekly Analysis",
+                color: ColorUtils.whatsappLightBackground,
+                icon: Icons.date_range_rounded,
+                content: ChatByWeekWidget(messageData: widget.messageData),
               ),
 
               // Months(s) Analysis

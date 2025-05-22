@@ -24,7 +24,7 @@ class TopWordsWidget extends StatelessWidget {
       children: [
         // Introduction section
         Container(
-          padding: const EdgeInsets.only(bottom: 12),
+          padding: const EdgeInsets.only(bottom: 12, left: 5, right: 5),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [

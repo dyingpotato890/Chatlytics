@@ -35,7 +35,7 @@ class ChatByYearWidget extends StatelessWidget {
         // Year summary header
         Container(
           width: double.infinity,
-          padding: const EdgeInsets.symmetric(vertical: 16),
+          padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 5),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -100,17 +100,14 @@ class ChatByYearWidget extends StatelessWidget {
           return Container(
             margin: const EdgeInsets.only(bottom: 12),
             padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: Colors.grey.withAlpha(15),
-              borderRadius: BorderRadius.circular(12),
-            ),
+
             child: Row(
               children: [
                 // Year icon
                 Container(
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
-                    color: Colors.grey.withAlpha(30),
+                    color: ColorUtils.whatsappLightGreen.withAlpha(26),
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: const Icon(
