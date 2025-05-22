@@ -31,10 +31,7 @@ class OverviewWidget extends StatelessWidget {
         gradient: const LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [
-            ColorUtils.whatsappLightGreen,
-            ColorUtils.whatsappDarkGreen,
-          ],
+          colors: [ColorUtils.whatsappLightGreen, ColorUtils.whatsappDarkGreen],
         ),
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
@@ -49,7 +46,7 @@ class OverviewWidget extends StatelessWidget {
         color: Colors.transparent,
         child: InkWell(
           borderRadius: BorderRadius.circular(24),
-          onTap: () {}, // Add functionality when card is tapped
+          onTap: () {},
           splashColor: Colors.white.withAlpha(26),
           highlightColor: Colors.white.withAlpha(13),
           child: Padding(
@@ -73,6 +70,14 @@ class OverviewWidget extends StatelessWidget {
                       decoration: BoxDecoration(
                         color: Colors.white.withAlpha(51),
                         borderRadius: BorderRadius.circular(14),
+
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withAlpha(20),
+                            blurRadius: 12,
+                            offset: const Offset(0, 5),
+                          ),
+                        ],
                       ),
                       child: const Icon(
                         Icons.chat_bubble_rounded,
@@ -82,7 +87,9 @@ class OverviewWidget extends StatelessWidget {
                     ),
                   ],
                 ),
+
                 const SizedBox(height: 16),
+
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
@@ -108,7 +115,9 @@ class OverviewWidget extends StatelessWidget {
                     ),
                   ],
                 ),
+
                 const SizedBox(height: 16),
+
                 Container(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 12,
@@ -181,10 +190,10 @@ class OverviewWidget extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: ColorUtils.whatsappLightBackground,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(15),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withAlpha(10),
+            color: Colors.black.withAlpha(50),
             blurRadius: 6,
             offset: const Offset(0, 2),
           ),

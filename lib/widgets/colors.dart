@@ -33,6 +33,6 @@ class ColorUtils {
   static const Color whatsappDarkGreen = Color(0xFF075E54);
   static const Color whatsappSecondaryText = Color(0xFF667781);
   static const Color whatsappTextColor = Color(0xFF1F2C34);
-  static const Color whatsappLightBackground = Color(0xFFE9EDEF);
+  static const Color whatsappLightBackground = Color.fromARGB(255, 255, 255, 255);
   static const Color whatsappDivider = Color(0xFFDCE6E7);
 }

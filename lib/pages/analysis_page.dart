@@ -3,6 +3,9 @@ import 'package:chatlytics/widgets/colors.dart';
 import 'package:chatlytics/widgets/emoji_analysis.dart';
 import 'package:chatlytics/widgets/first_last_message.dart';
 import 'package:chatlytics/widgets/messages_per_user.dart';
+import 'package:chatlytics/widgets/most_talked_days.dart';
+import 'package:chatlytics/widgets/most_talked_hours.dart';
+import 'package:chatlytics/widgets/most_talked_months.dart';
 import 'package:chatlytics/widgets/overview.dart';
 import 'package:chatlytics/widgets/panel.dart';
 import 'package:chatlytics/widgets/top_words.dart';
@@ -43,7 +46,8 @@ class _AnalysisPageState extends State<AnalysisPage> {
           ),
         ],
       ),
-      backgroundColor: Colors.white, // Light theme background
+      backgroundColor: ColorUtils.whatsappDivider,
+
       body: SafeArea(
         child: SingleChildScrollView(
           physics: const BouncingScrollPhysics(),
@@ -85,7 +89,7 @@ class _AnalysisPageState extends State<AnalysisPage> {
               // Messages per user panel
               PanelWidget(
                 title: "Messages per User",
-                color: const Color(0xFFE9EDEF),
+                color: ColorUtils.whatsappLightBackground,
                 icon: Icons.people_alt_rounded,
                 content: MessagesPerUserWidget(messageData: widget.messageData),
               ),
@@ -93,11 +97,12 @@ class _AnalysisPageState extends State<AnalysisPage> {
               // First And Last Messages
               PanelWidget(
                 title: "Messages per User",
-                color: const Color(0xFFE9EDEF),
+                color: ColorUtils.whatsappLightBackground,
                 icon: Icons.people_alt_rounded,
-                content: FirstLastMessageWidget(messageData: widget.messageData),
+                content: FirstLastMessageWidget(
+                  messageData: widget.messageData,
+                ),
               ),
-              
 
               // Top Words panel
               PanelWidget(
@@ -113,6 +118,27 @@ class _AnalysisPageState extends State<AnalysisPage> {
                 color: ColorUtils.whatsappLightBackground,
                 icon: Icons.emoji_emotions_rounded,
                 content: EmojiAnalysisWidget(messageData: widget.messageData),
+              ),
+
+              PanelWidget(
+                title: "Most Active Days",
+                color: ColorUtils.whatsappLightBackground,
+                icon: Icons.calendar_today_rounded,
+                content: MostTalkedDaysWidget(messageData: widget.messageData),
+              ),
+
+              PanelWidget(
+                title: "Hourly Activity",
+                color: ColorUtils.whatsappLightBackground,
+                icon: Icons.schedule_rounded,
+                content: MostTalkedHoursWidget(messageData: widget.messageData),
+              ),
+
+              PanelWidget(
+                title: "Monthly Activity",
+                color: ColorUtils.whatsappLightBackground,
+                icon: Icons.date_range_rounded,
+                content: ChatByMonthWidget(messageData: widget.messageData),
               ),
             ],
           ),

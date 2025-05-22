@@ -179,7 +179,7 @@ class EmojiAnalysisWidget extends StatelessWidget {
             border: Border.all(color: borderColor, width: 2),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withAlpha(10),
+                color: Colors.black.withAlpha(50),
                 blurRadius: 4,
                 offset: const Offset(0, 2),
               ),

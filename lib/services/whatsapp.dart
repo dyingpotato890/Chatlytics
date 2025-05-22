@@ -3,6 +3,8 @@ import 'package:chatlytics/models/data.dart';
 import 'package:chatlytics/models/message.dart';
 import 'package:flutter_archive/flutter_archive.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:intl/intl.dart';
+
 
 class Whatsapp {
   final RegExp messageLineRegex = RegExp(
