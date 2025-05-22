@@ -211,12 +211,12 @@ class TopWordsWidget extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: medalColors[index].withOpacity(0.2),
+            color: medalColors[index].withAlpha(51),
             blurRadius: 4,
             offset: const Offset(0, 2),
           ),
         ],
-        border: Border.all(color: medalColors[index].withOpacity(0.3)),
+        border: Border.all(color: medalColors[index].withAlpha(77)),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -225,7 +225,7 @@ class TopWordsWidget extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: medalColors[index].withOpacity(0.2),
+              color: medalColors[index].withAlpha(51),
               shape: BoxShape.circle,
             ),
             child: Icon(
@@ -241,7 +241,7 @@ class TopWordsWidget extends StatelessWidget {
             style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.bold,
-              color: medalColors[index].withOpacity(0.8),
+              color: medalColors[index].withAlpha(204),
             ),
             textAlign: TextAlign.center,
             overflow: TextOverflow.ellipsis,
@@ -253,7 +253,7 @@ class TopWordsWidget extends StatelessWidget {
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold,
-              color: ColorUtils.whatsappDarkGreen.withOpacity(0.9),
+              color: ColorUtils.whatsappDarkGreen.withAlpha(230),
             ),
           ),
         ],

@@ -53,19 +53,11 @@ class _HomePageState extends State<HomePage> {
 
         String? filePath = result.files.first.path;
         attributes = await obj.getAttributes(filePath);
-        print('Message Count: ${attributes.messageCount}');
-        print('Active Days: ${attributes.activeDays}');
-        print('Media Shared: ${attributes.mediaShared}');
-        print('Participants: ${attributes.participants}');
-        print('Most Talked Days: ${attributes.mostTalkedDays}');
-        print('Most Talked Hours: ${attributes.mostTalkedHours}');
-        print('User Messages Count: ${attributes.userMessagesCount}');
-        print('First Message: ${attributes.firstMessage.message}');
-        print('Last Message: ${attributes.lastMessage.message}');
       }
     } catch (e) {
       // Handle any errors
       ScaffoldMessenger.of(
+        // ignore: use_build_context_synchronously
         context,
       ).showSnackBar(SnackBar(content: Text('Error picking file: $e')));
     } finally {
@@ -135,7 +127,7 @@ class _HomePageState extends State<HomePage> {
                         borderRadius: BorderRadius.circular(16),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withOpacity(0.1),
+                            color: Colors.black.withAlpha(26),
                             blurRadius: 10,
                             offset: const Offset(0, 5),
                           ),
@@ -265,7 +257,7 @@ class _HomePageState extends State<HomePage> {
             width: 28,
             height: 28,
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.2),
+              color: Colors.white.withAlpha(51),
               shape: BoxShape.circle,
             ),
             child: Center(

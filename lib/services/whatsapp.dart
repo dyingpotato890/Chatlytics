@@ -323,7 +323,6 @@ class Whatsapp {
 
       return messageData;
     } catch (e) {
-      print("Error in getAttributes: $e");
       return messageData;
     }
   }
