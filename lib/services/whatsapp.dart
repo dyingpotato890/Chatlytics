@@ -3,13 +3,18 @@ import 'package:chatlytics/models/data.dart';
 import 'package:chatlytics/models/message.dart';
 import 'package:flutter_archive/flutter_archive.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:intl/intl.dart';
-
 
 class Whatsapp {
   final RegExp messageLineRegex = RegExp(
-    r'^(\d{1,2}/\d{1,2}/\d{2,4}),\s(\d{1,2}:\d{2}(?:\s?[ap]m)?)\s-\s([^:]+)(?::\s(.+))?$',
+    r'^(\d{1,2}\/\d{1,2}\/\d{2,4}),\s+(\d{1,2}:\d{2}(?::\d{2})?\s*(?:[AaPp][Mm])?)\s*[--]\s*([^:]+?):\s*(.*)$',
     caseSensitive: false,
+    multiLine: false,
+  );
+
+  final RegExp alternativeMessageRegex = RegExp(
+    r'^\[(\d{1,2}\/\d{1,2}\/\d{2,4}),\s+(\d{1,2}:\d{2}(?::\d{2})?\s*(?:[AaPp][Mm])?)\]\s+([^:]+?):\s*(.*)$',
+    caseSensitive: false,
+    multiLine: false,
   );
 
   // Media detection regex
@@ -115,6 +120,20 @@ class Whatsapp {
     return false;
   }
 
+  String _extractHour(String time) {
+    // Handle different time formats
+    if (time.toLowerCase().contains('am') ||
+        time.toLowerCase().contains('pm')) {
+      // 12-hour format
+      String hourPart = time.split(':')[0].trim();
+      String ampm = time.toLowerCase().contains('pm') ? 'PM' : 'AM';
+      return '$hourPart $ampm';
+    } else {
+      // 24-hour format
+      return time.split(':')[0];
+    }
+  }
+
   void processMessage(
     String date,
     String time,
@@ -158,7 +177,7 @@ class Whatsapp {
       // Process date and time metrics
       String dayKey = date;
       String monthKey = date.split('/')[1];
-      String hourKey = time.split(':')[0];
+      String hourKey = _extractHour(time);
 
       // Track unique days
       uniqueDays.add(dayKey);
@@ -234,12 +253,20 @@ class Whatsapp {
       if (filePath.isNotEmpty) {
         final List<String> content = await extractZipAndReadTxt(filePath);
         String? currentDate, currentTime, currentSender;
-        String currentMessage = "";
+        StringBuffer currentMessage = StringBuffer();
         bool inMultiLineMessage = false;
 
-        for (var line in content) {
-          if (messageLineRegex.hasMatch(line)) {
-            // Processing a multiline message, finalize it before starting new one
+        for (int i = 0; i < content.length; i++) {
+          String line = content[i];
+
+          // Try primary regex first
+          RegExpMatch? match = messageLineRegex.firstMatch(line);
+
+          // If no match, try alternative regex
+          match ??= alternativeMessageRegex.firstMatch(line);
+
+          if (match != null) {
+            // Process previous message if exists
             if (inMultiLineMessage &&
                 currentDate != null &&
                 currentSender != null) {
@@ -247,20 +274,23 @@ class Whatsapp {
                 currentDate,
                 currentTime!,
                 currentSender,
-                currentMessage,
+                currentMessage.toString().trim(),
               );
             }
 
             // Start new message
-            final match = messageLineRegex.firstMatch(line)!;
             currentDate = match.group(1);
             currentTime = match.group(2);
             currentSender = match.group(3)?.trim();
-            currentMessage = match.group(4) ?? "";
+            currentMessage.clear();
+            currentMessage.write(match.group(4) ?? "");
             inMultiLineMessage = true;
           } else if (inMultiLineMessage) {
             // This is a continuation of the previous message
-            currentMessage += "\n$line";
+            if (currentMessage.isNotEmpty) {
+              currentMessage.write("\n");
+            }
+            currentMessage.write(line);
           }
         }
 
@@ -272,10 +302,11 @@ class Whatsapp {
             currentDate,
             currentTime!,
             currentSender,
-            currentMessage,
+            currentMessage.toString().trim(),
           );
         }
 
+        // Sort the maps
         messageData.mostUsedWords = _sortMapByValueDesc(
           messageData.mostUsedWords,
         );
