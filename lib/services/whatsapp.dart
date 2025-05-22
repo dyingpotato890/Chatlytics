@@ -46,6 +46,16 @@ class Whatsapp {
     mostTalkedDays: {},
     mostTalkedHours: {},
     monthCount: {},
+    weekCount: {
+      "Sunday": 0,
+      "Monday": 0,
+      "Tuesday": 0,
+      "Wednesday": 0,
+      "Thursday": 0,
+      "Friday": 0,
+      "Saturday": 0,
+    },
+    yearCount: {},
     firstMessage: Message(date: '', time: '', sender: '', message: ''),
     lastMessage: Message(date: '', time: '', sender: '', message: ''),
   );
@@ -134,6 +144,33 @@ class Whatsapp {
     }
   }
 
+  DateTime _parseDate(String date) {
+    List<String> parts = date.split('/');
+    int day = int.parse(parts[0]);
+    int month = int.parse(parts[1]);
+    int year = int.parse(parts[2]);
+
+    // Handle 2-digit years
+    if (year < 100) {
+      year += 2000;
+    }
+
+    return DateTime(year, month, day);
+  }
+
+  String _getDayOfWeek(DateTime date) {
+    const List<String> weekdays = [
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+      "Sunday",
+    ];
+    return weekdays[date.weekday - 1];
+  }
+
   void processMessage(
     String date,
     String time,
@@ -178,6 +215,9 @@ class Whatsapp {
       String dayKey = date;
       String monthKey = date.split('/')[1];
       String hourKey = _extractHour(time);
+      String yearKey = date.split('/')[2];
+      DateTime parsedDate = _parseDate(date);
+      String weekDay = _getDayOfWeek(parsedDate);
 
       // Track unique days
       uniqueDays.add(dayKey);
@@ -206,6 +246,16 @@ class Whatsapp {
         messageData.monthCount[monthKey] =
             messageData.monthCount[monthKey]! + 1;
       }
+
+      // Chat by Year
+      if (!messageData.yearCount.containsKey(yearKey)) {
+        messageData.yearCount[yearKey] = 1;
+      } else {
+        messageData.yearCount[yearKey] = messageData.yearCount[yearKey]! + 1;
+      }
+
+      // Chat by Week Day
+      messageData.weekCount[weekDay] = messageData.weekCount[weekDay]! + 1;
 
       // Process message content if available
       if (message != null && message.isNotEmpty) {

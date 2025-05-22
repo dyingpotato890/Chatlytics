@@ -14,6 +14,8 @@ class Data {
   Map<String, int> mostTalkedDays;
   Map<String, int> mostTalkedHours;
   Map<String, int> monthCount;
+  Map<String, int> weekCount;
+  Map<String, int> yearCount;
 
   Data({
     required this.messageCount,
@@ -29,5 +31,7 @@ class Data {
     required this.mostTalkedDays,
     required this.mostTalkedHours,
     required this.monthCount,
+    required this.weekCount,
+    required this.yearCount,
   });
 }

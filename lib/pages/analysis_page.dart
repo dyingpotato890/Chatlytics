@@ -1,4 +1,5 @@
 import 'package:chatlytics/models/data.dart';
+import 'package:chatlytics/widgets/chats_per_year.dart';
 import 'package:chatlytics/widgets/colors.dart';
 import 'package:chatlytics/widgets/emoji_analysis.dart';
 import 'package:chatlytics/widgets/first_last_message.dart';
@@ -120,13 +121,7 @@ class _AnalysisPageState extends State<AnalysisPage> {
                 content: EmojiAnalysisWidget(messageData: widget.messageData),
               ),
 
-              PanelWidget(
-                title: "Most Active Days",
-                color: ColorUtils.whatsappLightBackground,
-                icon: Icons.calendar_today_rounded,
-                content: MostTalkedDaysWidget(messageData: widget.messageData),
-              ),
-
+              // Hours(s) Analysis
               PanelWidget(
                 title: "Hourly Activity",
                 color: ColorUtils.whatsappLightBackground,
@@ -134,11 +129,28 @@ class _AnalysisPageState extends State<AnalysisPage> {
                 content: MostTalkedHoursWidget(messageData: widget.messageData),
               ),
 
+              // Day(s) Analysis
+              PanelWidget(
+                title: "Most Active Days",
+                color: ColorUtils.whatsappLightBackground,
+                icon: Icons.calendar_today_rounded,
+                content: MostTalkedDaysWidget(messageData: widget.messageData),
+              ),
+
+              // Months(s) Analysis
               PanelWidget(
                 title: "Monthly Activity",
                 color: ColorUtils.whatsappLightBackground,
                 icon: Icons.date_range_rounded,
                 content: ChatByMonthWidget(messageData: widget.messageData),
+              ),
+
+              // Year(s) Analysis
+              PanelWidget(
+                title: "Yearly Activity",
+                color: ColorUtils.whatsappLightBackground,
+                icon: Icons.date_range_rounded,
+                content: ChatByYearWidget(messageData: widget.messageData),
               ),
             ],
           ),
