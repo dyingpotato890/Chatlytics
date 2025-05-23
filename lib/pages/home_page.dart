@@ -32,13 +32,13 @@ class _HomePageState extends State<HomePage> {
     mostTalkedHours: {},
     monthCount: {},
     weekCount: {
-      "Sunday" : 0,
-      "Monday" : 0,
-      "Tuesday" : 0,
-      "Wednesday" : 0,
-      "Thursday" : 0,
-      "Friday" : 0,
-      "Saturday" : 0,
+      "Sunday": 0,
+      "Monday": 0,
+      "Tuesday": 0,
+      "Wednesday": 0,
+      "Thursday": 0,
+      "Friday": 0,
+      "Saturday": 0,
     },
     yearCount: {},
     firstMessage: Message(date: '', time: '', sender: '', message: ''),
@@ -76,18 +76,24 @@ class _HomePageState extends State<HomePage> {
     } finally {
       setState(() {
         _isLoading = false;
+
+        _analyzeChat();
       });
     }
   }
 
   void _analyzeChat() {
-    Navigator.of(
-      context,
-    ).push(MaterialPageRoute(builder: (context) => AnalysisPage(messageData: attributes,)));
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => AnalysisPage(messageData: attributes),
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
+    var media = MediaQuery.sizeOf(context);
+
     return Scaffold(
       body: Container(
         decoration: const BoxDecoration(
@@ -100,6 +106,7 @@ class _HomePageState extends State<HomePage> {
             ], // WhatsApp green gradient
           ),
         ),
+
         child: SafeArea(
           child: Center(
             child: SingleChildScrollView(
@@ -114,7 +121,9 @@ class _HomePageState extends State<HomePage> {
                       size: 80,
                       color: Colors.white,
                     ),
-                    const SizedBox(height: 24),
+
+                    SizedBox(height: media.height * 0.03),
+
                     const Text(
                       'WhatsApp Chat Analyzer',
                       style: TextStyle(
@@ -123,13 +132,16 @@ class _HomePageState extends State<HomePage> {
                         color: Colors.white,
                       ),
                     ),
-                    const SizedBox(height: 16),
+
+                    SizedBox(height: media.height * 0.02),
+
                     const Text(
                       'Upload your exported WhatsApp chat to get detailed analytics and insights',
                       textAlign: TextAlign.center,
                       style: TextStyle(fontSize: 16, color: Colors.white),
                     ),
-                    const SizedBox(height: 48),
+
+                    SizedBox(height: media.height * 0.05),
 
                     // Upload area
                     Container(
@@ -146,6 +158,7 @@ class _HomePageState extends State<HomePage> {
                           ),
                         ],
                       ),
+                      
                       child: Column(
                         children: [
                           GestureDetector(
@@ -160,6 +173,7 @@ class _HomePageState extends State<HomePage> {
                                   width: 2,
                                 ),
                               ),
+                              
                               child:
                                   _isLoading
                                       ? const CircularProgressIndicator(
@@ -177,7 +191,9 @@ class _HomePageState extends State<HomePage> {
                                                     ? const Color(0xFF075E54)
                                                     : Colors.grey,
                                           ),
-                                          const SizedBox(height: 16),
+
+                                          SizedBox(height: media.height * 0.02),
+
                                           Text(
                                             _isFileSelected
                                                 ? _fileName
@@ -199,35 +215,20 @@ class _HomePageState extends State<HomePage> {
                                       ),
                             ),
                           ),
-                          const SizedBox(height: 24),
+
+                          SizedBox(height: media.height * 0.03),
+
                           const Text(
                             'Supports .zip, .rar, and .txt files',
                             style: TextStyle(fontSize: 14, color: Colors.grey),
-                          ),
-                          const SizedBox(height: 24),
-                          ElevatedButton(
-                            onPressed: _isFileSelected ? _analyzeChat : null,
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color(0xFF075E54),
-                              minimumSize: const Size(double.infinity, 50),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                            ),
-                            child: const Text(
-                              'Analyze Chat',
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
                           ),
                         ],
                       ),
                     ),
 
                     // Instructions
-                    const SizedBox(height: 48),
+                    SizedBox(height: media.height * 0.05),
+
                     const Text(
                       'How to export your WhatsApp chat:',
                       style: TextStyle(
@@ -236,7 +237,9 @@ class _HomePageState extends State<HomePage> {
                         color: Colors.white,
                       ),
                     ),
-                    const SizedBox(height: 16),
+
+                    SizedBox(height: media.height * 0.02),
+
                     _buildInstructionStep('1', 'Open the chat in WhatsApp'),
                     _buildInstructionStep(
                       '2',
@@ -283,7 +286,9 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
           ),
+
           const SizedBox(width: 12),
+          
           Expanded(
             child: Text(
               text,

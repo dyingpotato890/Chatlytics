@@ -1,4 +1,5 @@
 import 'package:chatlytics/models/data.dart';
+import 'package:chatlytics/pages/home_page.dart';
 import 'package:chatlytics/widgets/chats_per_week.dart';
 import 'package:chatlytics/widgets/chats_per_year.dart';
 import 'package:chatlytics/widgets/colors.dart';
@@ -40,14 +41,11 @@ class _AnalysisPageState extends State<AnalysisPage> {
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, size: 24, color: Colors.white),
-          onPressed: () => Navigator.of(context).pop(),
+          onPressed:
+              () => Navigator.of(context).pushReplacement(
+                MaterialPageRoute(builder: (context) => HomePage()),
+              ),
         ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.more_vert, size: 24, color: Colors.white),
-            onPressed: () {}, // Add functionality as needed
-          ),
-        ],
       ),
       backgroundColor: ColorUtils.whatsappDivider,
 
