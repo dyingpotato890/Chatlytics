@@ -43,6 +43,9 @@ class _HomePageState extends State<HomePage> {
     yearCount: {},
     firstMessage: Message(date: '', time: '', sender: '', message: ''),
     lastMessage: Message(date: '', time: '', sender: '', message: ''),
+    highestDayStreak: 0,
+    longestStreak: null,
+    allStreaks: [],
   );
 
   Future<void> _pickFile() async {

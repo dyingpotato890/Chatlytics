@@ -1,4 +1,5 @@
 import 'package:chatlytics/models/message.dart';
+import 'package:chatlytics/models/streak_info.dart';
 
 class Data {
   int messageCount;
@@ -16,6 +17,9 @@ class Data {
   Map<String, int> monthCount;
   Map<String, int> weekCount;
   Map<String, int> yearCount;
+  int highestDayStreak;
+  StreakInfo? longestStreak;
+  List<StreakInfo> allStreaks;
 
   Data({
     required this.messageCount,
@@ -33,5 +37,8 @@ class Data {
     required this.monthCount,
     required this.weekCount,
     required this.yearCount,
+    required this.highestDayStreak,
+    this.longestStreak,
+    required this.allStreaks,
   });
 }

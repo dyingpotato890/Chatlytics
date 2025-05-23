@@ -10,6 +10,7 @@ import 'package:chatlytics/widgets/most_talked_hours.dart';
 import 'package:chatlytics/widgets/chats_per_months.dart';
 import 'package:chatlytics/widgets/overview.dart';
 import 'package:chatlytics/widgets/panel.dart';
+import 'package:chatlytics/widgets/streak.dart';
 import 'package:chatlytics/widgets/top_words.dart';
 import 'package:flutter/material.dart';
 
@@ -94,6 +95,14 @@ class _AnalysisPageState extends State<AnalysisPage> {
                 color: ColorUtils.whatsappLightBackground,
                 icon: Icons.people_alt_rounded,
                 content: MessagesPerUserWidget(messageData: widget.messageData),
+              ),
+
+              // Streaks
+              PanelWidget(
+                title: "Chat Streaks",
+                color: ColorUtils.whatsappLightBackground,
+                icon: Icons.star_rounded,
+                content: DayStreakWidget(messageData: widget.messageData),
               ),
 
               // First And Last Messages

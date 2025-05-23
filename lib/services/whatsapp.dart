@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:chatlytics/models/data.dart';
 import 'package:chatlytics/models/message.dart';
+import 'package:chatlytics/models/streak_info.dart';
 import 'package:flutter_archive/flutter_archive.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -58,10 +59,14 @@ class Whatsapp {
     yearCount: {},
     firstMessage: Message(date: '', time: '', sender: '', message: ''),
     lastMessage: Message(date: '', time: '', sender: '', message: ''),
+    highestDayStreak: 0,
+    longestStreak: null,
+    allStreaks: [],
   );
 
   final Set<String> uniqueDays = {};
   final Set<String> uniqueParticipants = {};
+  final List<DateTime> messageDates = [];
 
   Future<List<String>> extractZipAndReadTxt(String zipPath) async {
     try {
@@ -171,6 +176,93 @@ class Whatsapp {
     return weekdays[date.weekday - 1];
   }
 
+  Map<String, dynamic> _calculateDetailedStreaks(List<DateTime> dates) {
+    if (dates.isEmpty) {
+      return {
+        'highestDayStreak': 0,
+        'longestStreak': null,
+        'currentStreak': null,
+        'allStreaks': <StreakInfo>[],
+      };
+    }
+
+    // Sort dates and remove duplicates (only keep date part, ignore time)
+    Set<DateTime> uniqueDatesSet =
+        dates.map((date) => DateTime(date.year, date.month, date.day)).toSet();
+    List<DateTime> sortedDates = uniqueDatesSet.toList()..sort();
+
+    List<StreakInfo> allStreaks = [];
+    int maxStreakLength = 1;
+    int currentStreakLength = 1;
+    DateTime currentStreakStart = sortedDates[0];
+    DateTime currentStreakEnd = sortedDates[0];
+    StreakInfo? longestStreak;
+
+    for (int i = 1; i < sortedDates.length; i++) {
+      DateTime prevDate = sortedDates[i - 1];
+      DateTime currentDate = sortedDates[i];
+
+      // Check if dates are consecutive
+      if (currentDate.difference(prevDate).inDays == 1) {
+        currentStreakLength++;
+        currentStreakEnd = currentDate;
+      } else {
+        // End of current streak, record it
+        StreakInfo streak = StreakInfo(
+          length: currentStreakLength,
+          startDate: currentStreakStart,
+          endDate: currentStreakEnd,
+        );
+        allStreaks.add(streak);
+
+        // Check if this is the longest streak so far
+        if (currentStreakLength > maxStreakLength) {
+          maxStreakLength = currentStreakLength;
+          longestStreak = streak;
+        }
+
+        // Start new streak
+        currentStreakLength = 1;
+        currentStreakStart = currentDate;
+        currentStreakEnd = currentDate;
+      }
+    }
+
+    // Don't forget to add the last streak
+    StreakInfo lastStreak = StreakInfo(
+      length: currentStreakLength,
+      startDate: currentStreakStart,
+      endDate: currentStreakEnd,
+    );
+    allStreaks.add(lastStreak);
+
+    // Check if the last streak is the longest
+    if (currentStreakLength > maxStreakLength) {
+      maxStreakLength = currentStreakLength;
+      longestStreak = lastStreak;
+    }
+
+    // Determine current streak (if the last date is recent)
+    DateTime now = DateTime.now();
+    DateTime today = DateTime(now.year, now.month, now.day);
+    DateTime yesterday = today.subtract(Duration(days: 1));
+
+    StreakInfo? currentStreak;
+    DateTime lastActiveDate = sortedDates.last;
+
+    // Current streak is active if last message was today or yesterday
+    if (lastActiveDate == today || lastActiveDate == yesterday) {
+      currentStreak = lastStreak;
+    }
+
+    return {
+      'highestDayStreak': maxStreakLength,
+      'longestStreak': longestStreak,
+      'currentStreak': currentStreak,
+      'allStreaks': allStreaks,
+    };
+  }
+
   void processMessage(
     String date,
     String time,
@@ -217,6 +309,7 @@ class Whatsapp {
       String hourKey = _extractHour(time);
       String yearKey = date.split('/')[2];
       DateTime parsedDate = _parseDate(date);
+      messageDates.add(parsedDate);
       String weekDay = _getDayOfWeek(parsedDate);
 
       // Track unique days
@@ -369,6 +462,11 @@ class Whatsapp {
         messageData.mostTalkedHours = _sortMapByValueDesc(
           messageData.mostTalkedHours,
         );
+
+        Map<String, dynamic> streakData = _calculateDetailedStreaks(messageDates);
+        messageData.highestDayStreak = streakData['highestDayStreak'];
+        messageData.longestStreak = streakData['longestStreak'];
+        messageData.allStreaks = streakData['allStreaks'];
       }
 
       return messageData;
