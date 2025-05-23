@@ -13,8 +13,6 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Chatlytics',
-      theme: ThemeData(
-      ),
       home: const HomePage(),
     );
   }

@@ -55,7 +55,8 @@ class _HomePageState extends State<HomePage> {
 
     try {
       FilePickerResult? result = await FilePicker.platform.pickFiles(
-        type: FileType.any,
+        type: FileType.custom,
+        allowedExtensions: ['zip'],
       );
 
       if (result != null) {
@@ -66,19 +67,27 @@ class _HomePageState extends State<HomePage> {
 
         String? filePath = result.files.first.path;
         attributes = await obj.getAttributes(filePath);
+
+        setState(() {
+          _isLoading = false;
+        });
+
+        _analyzeChat();
+      } else {
+        // User canceled the picker
+        setState(() {
+          _isLoading = false;
+        });
       }
     } catch (e) {
-      // Handle any errors
+      setState(() {
+        _isLoading = false;
+      });
+
       ScaffoldMessenger.of(
         // ignore: use_build_context_synchronously
         context,
       ).showSnackBar(SnackBar(content: Text('Error picking file: $e')));
-    } finally {
-      setState(() {
-        _isLoading = false;
-
-        _analyzeChat();
-      });
     }
   }
 
@@ -116,24 +125,9 @@ class _HomePageState extends State<HomePage> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     // Logo and app name
-                    const Icon(
-                      Icons.chat_bubble_outline,
-                      size: 80,
-                      color: Colors.white,
-                    ),
+                    Image.asset('assets/img/chatlytics-logo-transparent.png'),
 
                     SizedBox(height: media.height * 0.03),
-
-                    const Text(
-                      'WhatsApp Chat Analyzer',
-                      style: TextStyle(
-                        fontSize: 28,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
-                    ),
-
-                    SizedBox(height: media.height * 0.02),
 
                     const Text(
                       'Upload your exported WhatsApp chat to get detailed analytics and insights',
@@ -141,7 +135,7 @@ class _HomePageState extends State<HomePage> {
                       style: TextStyle(fontSize: 16, color: Colors.white),
                     ),
 
-                    SizedBox(height: media.height * 0.05),
+                    SizedBox(height: media.height * 0.03),
 
                     // Upload area
                     Container(
@@ -158,7 +152,7 @@ class _HomePageState extends State<HomePage> {
                           ),
                         ],
                       ),
-                      
+
                       child: Column(
                         children: [
                           GestureDetector(
@@ -173,7 +167,7 @@ class _HomePageState extends State<HomePage> {
                                   width: 2,
                                 ),
                               ),
-                              
+
                               child:
                                   _isLoading
                                       ? const CircularProgressIndicator(
@@ -219,7 +213,7 @@ class _HomePageState extends State<HomePage> {
                           SizedBox(height: media.height * 0.03),
 
                           const Text(
-                            'Supports .zip, .rar, and .txt files',
+                            'Supports only .zip files',
                             style: TextStyle(fontSize: 14, color: Colors.grey),
                           ),
                         ],
@@ -288,7 +282,7 @@ class _HomePageState extends State<HomePage> {
           ),
 
           const SizedBox(width: 12),
-          
+
           Expanded(
             child: Text(
               text,
