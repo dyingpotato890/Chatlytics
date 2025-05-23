@@ -1,16 +1,25 @@
-# Chatlytics
+![SilentSnitch Logo](https://github.com/dyingpotato890/Chatlytics/blob/main/assets/img/chatlytics-logo-transparent.png)
 
-A new Flutter project.
+<br/>
 
-## Getting Started
+**Chatlytics** – An analytics tool for WhatsApp chats that visualizes and summarizes your conversations, providing insights such as message frequency, top contacts, word trends, and more.
 
-This project is a starting point for a Flutter application.
+---
 
-A few resources to get you started if this is your first Flutter project:
+## Download
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+**Currently, Chatlytics is not available on the Google Play Store.**
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+A direct download link is provided here:
+
+<p align="center">
+  <a href="https://drive.google.com/file/d/1tLUkBeVPCF4hMKFdA8g1EXMQbx4H6rsM/view?usp=drive_link">
+    <img src="https://img.shields.io/badge/⬇ Download%20APK-green?style=for-the-badge" alt="Download Chatlytics" />
+  </a>
+</p>
+
+<p align="center">
+  <strong>Loved it? ⭐️ Show your support by starring the repo!</strong>
+</p>
+
+---
