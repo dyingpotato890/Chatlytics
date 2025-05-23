@@ -3,6 +3,9 @@ import 'package:chatlytics/models/message.dart';
 import 'package:chatlytics/services/whatsapp.dart';
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:share_handler/share_handler.dart';
+import 'dart:async';
+import 'dart:io';
 import 'analysis_page.dart';
 
 class HomePage extends StatefulWidget {
@@ -16,6 +19,7 @@ class _HomePageState extends State<HomePage> {
   bool _isLoading = false;
   bool _isFileSelected = false;
   String _fileName = '';
+  late StreamSubscription _intentDataStreamSubscription;
 
   final Whatsapp obj = Whatsapp();
 
@@ -47,6 +51,87 @@ class _HomePageState extends State<HomePage> {
     longestStreak: null,
     allStreaks: [],
   );
+
+  @override
+  void initState() {
+    super.initState();
+    _initializeShareIntent();
+  }
+
+  void _initializeShareIntent() {
+    // Listen to shared media
+    _intentDataStreamSubscription = ShareHandler.instance.sharedMediaStream.listen(
+      (SharedMedia media) {
+        if (media.attachments?.isNotEmpty == true) {
+          final attachment = media.attachments!.first;
+          if (attachment?.path != null) {
+            _handleSharedFile(attachment!.path);
+          }
+        }
+      },
+      onError: (err) {
+        print("Error in share intent stream: $err");
+      },
+    );
+
+    // Handle initial shared content (when app is launched via share)
+    ShareHandler.instance.getInitialSharedMedia().then((SharedMedia? media) {
+      if (media?.attachments?.isNotEmpty == true) {
+        final attachment = media!.attachments!.first;
+        if (attachment?.path != null) {
+          _handleSharedFile(attachment!.path);
+        }
+      }
+    });
+  }
+
+  void _handleSharedFile(String filePath) async {
+    // Check if the file is a zip file
+    if (!filePath.toLowerCase().endsWith('.zip')) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please share a valid WhatsApp chat export (.zip file)'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    setState(() {
+      _isLoading = true;
+      _isFileSelected = true;
+      _fileName = filePath.split('/').last;
+    });
+
+    try {
+      // Verify the file exists
+      File file = File(filePath);
+      if (!await file.exists()) {
+        throw Exception('File not found');
+      }
+
+      attributes = await obj.getAttributes(filePath);
+
+      setState(() {
+        _isLoading = false;
+      });
+
+      _analyzeChat();
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+        _isFileSelected = false;
+        _fileName = '';
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error processing shared file: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
 
   Future<void> _pickFile() async {
     setState(() {
@@ -84,10 +169,12 @@ class _HomePageState extends State<HomePage> {
         _isLoading = false;
       });
 
-      ScaffoldMessenger.of(
-        // ignore: use_build_context_synchronously
-        context,
-      ).showSnackBar(SnackBar(content: Text('Error picking file: $e')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error picking file: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
     }
   }
 
@@ -97,6 +184,12 @@ class _HomePageState extends State<HomePage> {
         builder: (context) => AnalysisPage(messageData: attributes),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _intentDataStreamSubscription.cancel();
+    super.dispose();
   }
 
   @override
@@ -115,7 +208,6 @@ class _HomePageState extends State<HomePage> {
             ], // WhatsApp green gradient
           ),
         ),
-
         child: SafeArea(
           child: Center(
             child: SingleChildScrollView(
@@ -152,7 +244,6 @@ class _HomePageState extends State<HomePage> {
                           ),
                         ],
                       ),
-
                       child: Column(
                         children: [
                           GestureDetector(
@@ -167,53 +258,45 @@ class _HomePageState extends State<HomePage> {
                                   width: 2,
                                 ),
                               ),
-
-                              child:
-                                  _isLoading
-                                      ? const CircularProgressIndicator(
-                                        color: Color(0xFF075E54),
-                                      )
-                                      : Column(
-                                        children: [
-                                          Icon(
-                                            _isFileSelected
-                                                ? Icons.check_circle
-                                                : Icons.cloud_upload,
-                                            size: 60,
-                                            color:
-                                                _isFileSelected
-                                                    ? const Color(0xFF075E54)
-                                                    : Colors.grey,
+                              child: _isLoading
+                                  ? const CircularProgressIndicator(
+                                      color: Color(0xFF075E54),
+                                    )
+                                  : Column(
+                                      children: [
+                                        Icon(
+                                          _isFileSelected
+                                              ? Icons.check_circle
+                                              : Icons.cloud_upload,
+                                          size: 60,
+                                          color: _isFileSelected
+                                              ? const Color(0xFF075E54)
+                                              : Colors.grey,
+                                        ),
+                                        SizedBox(height: media.height * 0.02),
+                                        Text(
+                                          _isFileSelected
+                                              ? _fileName
+                                              : 'Tap to select your exported chat file',
+                                          textAlign: TextAlign.center,
+                                          style: TextStyle(
+                                            fontSize: 16,
+                                            color: _isFileSelected
+                                                ? const Color(0xFF075E54)
+                                                : Colors.grey[700],
+                                            fontWeight: _isFileSelected
+                                                ? FontWeight.bold
+                                                : FontWeight.normal,
                                           ),
-
-                                          SizedBox(height: media.height * 0.02),
-
-                                          Text(
-                                            _isFileSelected
-                                                ? _fileName
-                                                : 'Tap to select your exported chat file',
-                                            textAlign: TextAlign.center,
-                                            style: TextStyle(
-                                              fontSize: 16,
-                                              color:
-                                                  _isFileSelected
-                                                      ? const Color(0xFF075E54)
-                                                      : Colors.grey[700],
-                                              fontWeight:
-                                                  _isFileSelected
-                                                      ? FontWeight.bold
-                                                      : FontWeight.normal,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
+                                        ),
+                                      ],
+                                    ),
                             ),
                           ),
-
                           SizedBox(height: media.height * 0.03),
-
                           const Text(
-                            'Supports only .zip files',
+                            'Supports only .zip files\nYou can also share files directly to this app!',
+                            textAlign: TextAlign.center,
                             style: TextStyle(fontSize: 14, color: Colors.grey),
                           ),
                         ],
@@ -245,7 +328,7 @@ class _HomePageState extends State<HomePage> {
                     ),
                     _buildInstructionStep(
                       '4',
-                      'Share the exported file to this app',
+                      'Share the exported file directly to Chatlytics or tap above to browse',
                     ),
                   ],
                 ),
@@ -280,9 +363,7 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
           ),
-
           const SizedBox(width: 12),
-
           Expanded(
             child: Text(
               text,

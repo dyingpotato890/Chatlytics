@@ -13,7 +13,7 @@
 A direct download link is provided here:
 
 <p align="center">
-  <a href="https://drive.google.com/file/d/1tLUkBeVPCF4hMKFdA8g1EXMQbx4H6rsM/view?usp=drive_link">
+  <a href="https://drive.google.com/drive/folders/1GDqJwiujeBRU5SKETGypuq5l1Kn8Y0bP?usp=sharing">
     <img src="https://img.shields.io/badge/⬇ Download%20APK-green?style=for-the-badge" alt="Download Chatlytics" />
   </a>
 </p>

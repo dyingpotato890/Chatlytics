@@ -39,6 +39,7 @@ dependencies:
   flutter_archive: ^6.0.3
   path_provider: ^2.1.5
   intl: ^0.20.2
+  share_handler: ^0.0.22
 
 dev_dependencies:
   flutter_test:
