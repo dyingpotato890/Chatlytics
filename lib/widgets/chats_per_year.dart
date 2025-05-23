@@ -13,8 +13,6 @@ class ChatByYearWidget extends StatelessWidget {
     final Map<String, int> yearData = messageData.yearCount;
     final List<MapEntry<String, int>> yearEntries = yearData.entries.toList();
 
-    print(yearEntries);
-
     // Sort chronologically
     yearEntries.sort((a, b) => a.key.compareTo(b.key));
 
@@ -36,6 +34,10 @@ class ChatByYearWidget extends StatelessWidget {
         Container(
           width: double.infinity,
           padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 5),
+          decoration: BoxDecoration(
+            color: ColorUtils.whatsappLightBackground,
+            borderRadius: BorderRadius.circular(12),
+          ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -49,7 +51,7 @@ class ChatByYearWidget extends StatelessWidget {
                       color: ColorUtils.whatsappSecondaryText,
                     ),
                   ),
-                  const SizedBox(height: 4),
+                  const SizedBox(height: 8),
                   Text(
                     "20${mostActiveYear.key}",
                     style: const TextStyle(
@@ -62,9 +64,9 @@ class ChatByYearWidget extends StatelessWidget {
                     mostActiveYear.value > 0 
                         ? "Most active year"
                         : "No activity recorded",
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 12,
-                      color: ColorUtils.whatsappSecondaryText.withAlpha(204),
+                      color: ColorUtils.whatsappSecondaryText,
                     ),
                   ),
                 ],
@@ -87,7 +89,20 @@ class ChatByYearWidget extends StatelessWidget {
 
         const Divider(color: ColorUtils.whatsappDivider, height: 32),
 
-        const SizedBox(height: 20),
+        // Yearly activity chart
+        Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: ColorUtils.whatsappLightBackground,
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: SizedBox(
+            height: 140,
+            child: _buildYearlyChart(context, yearEntries, mostActiveYear.value),
+          ),
+        ),
+
+        const SizedBox(height: 16),
 
         // All years breakdown (in chronological order)
         ...yearEntries.map((entry) {
@@ -98,9 +113,12 @@ class ChatByYearWidget extends StatelessWidget {
               : 0;
 
           return Container(
-            margin: const EdgeInsets.only(bottom: 12),
+            margin: const EdgeInsets.only(bottom: 8),
             padding: const EdgeInsets.all(16),
-
+            decoration: BoxDecoration(
+              color: ColorUtils.whatsappLightBackground,
+              borderRadius: BorderRadius.circular(12),
+            ),
             child: Row(
               children: [
                 // Year icon
@@ -113,7 +131,7 @@ class ChatByYearWidget extends StatelessWidget {
                   child: const Icon(
                     Icons.calendar_today_rounded,
                     size: 20,
-                    color: ColorUtils.whatsappSecondaryText,
+                    color: ColorUtils.whatsappDarkGreen,
                   ),
                 ),
 
@@ -164,6 +182,92 @@ class ChatByYearWidget extends StatelessWidget {
                   ),
                 ),
               ],
+            ),
+          );
+        }),
+      ],
+    );
+  }
+
+  Widget _buildYearlyChart(
+    BuildContext context,
+    List<MapEntry<String, int>> yearEntries,
+    int maxValue,
+  ) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.end,
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: [
+        ...yearEntries.map((entry) {
+          final double percentage = maxValue > 0 ? entry.value / maxValue : 0;
+          final String year = entry.key;
+
+          return Expanded(
+            child: Container(
+              margin: const EdgeInsets.symmetric(horizontal: 4),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  // Value label (only show if > 0)
+                  SizedBox(
+                    height: 16,
+                    child:
+                        entry.value > 0
+                            ? Text(
+                              entry.value.toString(),
+                              style: const TextStyle(
+                                fontSize: 9,
+                                fontWeight: FontWeight.w500,
+                                color: ColorUtils.whatsappSecondaryText,
+                              ),
+                            )
+                            : null,
+                  ),
+                  const SizedBox(height: 4),
+
+                  // Bar (minimum height of 2 for years with 0 messages)
+                  AnimatedContainer(
+                    duration: const Duration(milliseconds: 800),
+                    curve: Curves.easeOutQuart,
+                    height: (80 * percentage).clamp(
+                      entry.value == 0 ? 2 : 8,
+                      80,
+                    ),
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.bottomCenter,
+                        end: Alignment.topCenter,
+                        colors:
+                            entry.value > 0
+                                ? [
+                                  ColorUtils.whatsappLightGreen,
+                                  ColorUtils.whatsappLightGreen.withAlpha(179),
+                                ]
+                                : [
+                                  Colors.grey.withAlpha(100),
+                                  Colors.grey.withAlpha(50),
+                                ],
+                      ),
+                      borderRadius: const BorderRadius.vertical(
+                        top: Radius.circular(4),
+                      ),
+                    ),
+                  ),
+
+                  // Year label
+                  Container(
+                    padding: const EdgeInsets.symmetric(vertical: 8),
+                    child: Text(
+                      "'$year",
+                      style: const TextStyle(
+                        fontSize: 9,
+                        fontWeight: FontWeight.w500,
+                        color: ColorUtils.whatsappTextColor,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
           );
         }),

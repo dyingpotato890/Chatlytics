@@ -310,7 +310,7 @@ class DayStreakWidget extends StatelessWidget {
                 ],
               ),
             );
-          }).toList(),
+          }),
 
           if (significantStreaks.length > 8) ...[
             const SizedBox(height: 8),
