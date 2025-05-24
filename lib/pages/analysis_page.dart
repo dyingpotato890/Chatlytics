@@ -41,10 +41,12 @@ class _AnalysisPageState extends State<AnalysisPage> {
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, size: 24, color: Colors.white),
-          onPressed:
-              () => Navigator.of(context).pushReplacement(
-                MaterialPageRoute(builder: (context) => HomePage()),
-              ),
+          onPressed: () {
+            Navigator.of(context).pushAndRemoveUntil(
+              MaterialPageRoute(builder: (context) => const HomePage()),
+              (Route<dynamic> route) => false,
+            );
+          },
         ),
       ),
       backgroundColor: ColorUtils.whatsappDivider,

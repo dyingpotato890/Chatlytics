@@ -60,19 +60,20 @@ class _HomePageState extends State<HomePage> {
 
   void _initializeShareIntent() {
     // Listen to shared media
-    _intentDataStreamSubscription = ShareHandler.instance.sharedMediaStream.listen(
-      (SharedMedia media) {
-        if (media.attachments?.isNotEmpty == true) {
-          final attachment = media.attachments!.first;
-          if (attachment?.path != null) {
-            _handleSharedFile(attachment!.path);
-          }
-        }
-      },
-      onError: (err) {
-        print("Error in share intent stream: $err");
-      },
-    );
+    _intentDataStreamSubscription = ShareHandler.instance.sharedMediaStream
+        .listen(
+          (SharedMedia media) {
+            if (media.attachments?.isNotEmpty == true) {
+              final attachment = media.attachments!.first;
+              if (attachment?.path != null) {
+                _handleSharedFile(attachment!.path);
+              }
+            }
+          },
+          onError: (err) {
+            // Ignore
+          },
+        );
 
     // Handle initial shared content (when app is launched via share)
     ShareHandler.instance.getInitialSharedMedia().then((SharedMedia? media) {
@@ -90,7 +91,9 @@ class _HomePageState extends State<HomePage> {
     if (!filePath.toLowerCase().endsWith('.zip')) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Please share a valid WhatsApp chat export (.zip file)'),
+          content: Text(
+            'Please share a valid WhatsApp chat export (.zip file)',
+          ),
           backgroundColor: Colors.red,
         ),
       );
@@ -124,6 +127,7 @@ class _HomePageState extends State<HomePage> {
         _fileName = '';
       });
 
+      // ignore: use_build_context_synchronously
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Error processing shared file: $e'),
@@ -169,6 +173,7 @@ class _HomePageState extends State<HomePage> {
         _isLoading = false;
       });
 
+      // ignore: use_build_context_synchronously
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Error picking file: $e'),
@@ -258,39 +263,43 @@ class _HomePageState extends State<HomePage> {
                                   width: 2,
                                 ),
                               ),
-                              child: _isLoading
-                                  ? const CircularProgressIndicator(
-                                      color: Color(0xFF075E54),
-                                    )
-                                  : Column(
-                                      children: [
-                                        Icon(
-                                          _isFileSelected
-                                              ? Icons.check_circle
-                                              : Icons.cloud_upload,
-                                          size: 60,
-                                          color: _isFileSelected
-                                              ? const Color(0xFF075E54)
-                                              : Colors.grey,
-                                        ),
-                                        SizedBox(height: media.height * 0.02),
-                                        Text(
-                                          _isFileSelected
-                                              ? _fileName
-                                              : 'Tap to select your exported chat file',
-                                          textAlign: TextAlign.center,
-                                          style: TextStyle(
-                                            fontSize: 16,
-                                            color: _isFileSelected
-                                                ? const Color(0xFF075E54)
-                                                : Colors.grey[700],
-                                            fontWeight: _isFileSelected
-                                                ? FontWeight.bold
-                                                : FontWeight.normal,
+                              child:
+                                  _isLoading
+                                      ? const CircularProgressIndicator(
+                                        color: Color(0xFF075E54),
+                                      )
+                                      : Column(
+                                        children: [
+                                          Icon(
+                                            _isFileSelected
+                                                ? Icons.check_circle
+                                                : Icons.cloud_upload,
+                                            size: 60,
+                                            color:
+                                                _isFileSelected
+                                                    ? const Color(0xFF075E54)
+                                                    : Colors.grey,
                                           ),
-                                        ),
-                                      ],
-                                    ),
+                                          SizedBox(height: media.height * 0.02),
+                                          Text(
+                                            _isFileSelected
+                                                ? _fileName
+                                                : 'Tap to select your exported chat file',
+                                            textAlign: TextAlign.center,
+                                            style: TextStyle(
+                                              fontSize: 16,
+                                              color:
+                                                  _isFileSelected
+                                                      ? const Color(0xFF075E54)
+                                                      : Colors.grey[700],
+                                              fontWeight:
+                                                  _isFileSelected
+                                                      ? FontWeight.bold
+                                                      : FontWeight.normal,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
                             ),
                           ),
                           SizedBox(height: media.height * 0.03),
