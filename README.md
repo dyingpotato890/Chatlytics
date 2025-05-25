@@ -23,3 +23,27 @@ A direct download link is provided here:
 </p>
 
 ---
+
+## Features
+
+### Chats Over Time
+
+- Weekly breakdown of your messaging behavior.
+- View monthly chat activity trends.
+- Annual summary of your conversations.
+
+### Message Analytics
+
+- See how many messages each participant has sent.
+- Find out when a conversation started and when it last ended.
+- Highlight the most frequently used words.
+- Breakdown of emojis used and their frequency.
+
+### Time-Based Activity
+
+- Discover the days you chatted the most.
+- Analyze your most active hours.
+
+### Engagement & Behavior
+
+- Track your longest active messaging streaks.
