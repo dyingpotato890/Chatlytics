@@ -2,7 +2,31 @@ import 'package:chatlytics/models/data.dart';
 import 'package:chatlytics/widgets/colors.dart';
 import 'package:flutter/material.dart';
 
-class EmojiAnalysisWidget extends StatelessWidget {
+class _EmojiData {
+  final String emoji;
+  final int count;
+  final int rank;
+
+  const _EmojiData({
+    required this.emoji,
+    required this.count,
+    required this.rank,
+  });
+}
+
+class _EmojiStats {
+  final int totalEmojis;
+  final String perMessage;
+  final String messagePercentage;
+
+  const _EmojiStats({
+    required this.totalEmojis,
+    required this.perMessage,
+    required this.messagePercentage,
+  });
+}
+
+class EmojiAnalysisWidget extends StatefulWidget {
   final Data messageData;
 
   const EmojiAnalysisWidget({
@@ -11,20 +35,65 @@ class EmojiAnalysisWidget extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
-    // Get emoji data from the actual data source
-    final Map<String, int> topEmojis = messageData.mostUsedEmojies;
+  State<EmojiAnalysisWidget> createState() => _EmojiAnalysisWidgetState();
+}
 
-    // Calculate total emojis
+class _EmojiAnalysisWidgetState extends State<EmojiAnalysisWidget> {
+  late final List<_EmojiData> _emojiList;
+  late final _EmojiStats _stats;
+  late final bool _hasEmojis;
+
+  @override
+  void initState() {
+    super.initState();
+    _precomputeEmojiData();
+  }
+
+  void _precomputeEmojiData() {
+    final Map<String, int> topEmojis = widget.messageData.mostUsedEmojies;
+    
+    // Calculate total emojis once
     int totalEmojis = 0;
-    topEmojis.forEach((_, count) {
+    for (final count in topEmojis.values) {
       totalEmojis += count;
-    });
+    }
 
-    // Get top emojis
-    final List<MapEntry<String, int>> topEmojisList =
-        topEmojis.entries.toList();
+    // Pre-compute emoji list with rankings
+    _emojiList = topEmojis.entries
+        .map((entry) => _EmojiData(
+              emoji: entry.key,
+              count: entry.value,
+              rank: 0,
+            ))
+        .toList();
 
+    // Sort once and assign rankings
+    _emojiList.sort((a, b) => b.count.compareTo(a.count));
+    for (int i = 0; i < _emojiList.length; i++) {
+      _emojiList[i] = _EmojiData(
+        emoji: _emojiList[i].emoji,
+        count: _emojiList[i].count,
+        rank: i,
+      );
+    }
+
+    // Pre-compute statistics
+    final messageCount = widget.messageData.messageCount;
+    _stats = _EmojiStats(
+      totalEmojis: totalEmojis,
+      perMessage: messageCount > 0 
+          ? (totalEmojis / messageCount).toStringAsFixed(2)
+          : "0.00",
+      messagePercentage: messageCount > 0 
+          ? "${(totalEmojis / messageCount * 100).round()}%"
+          : "0%",
+    );
+
+    _hasEmojis = _emojiList.isNotEmpty;
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Column(
       children: [
         Row(
@@ -38,18 +107,20 @@ class EmojiAnalysisWidget extends StatelessWidget {
                 color: ColorUtils.whatsappDarkGreen,
               ),
             ),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+            DecoratedBox(
               decoration: BoxDecoration(
                 color: ColorUtils.whatsappLightGreen.withAlpha(50),
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: Text(
-                "$totalEmojis Total",
-                style: const TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
-                  color: ColorUtils.whatsappDarkGreen,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                child: Text(
+                  "${_stats.totalEmojis} Total",
+                  style: const TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                    color: ColorUtils.whatsappDarkGreen,
+                  ),
                 ),
               ),
             ),
@@ -59,90 +130,84 @@ class EmojiAnalysisWidget extends StatelessWidget {
         const SizedBox(height: 20),
 
         // Emoji grid with modern look
-        topEmojisList.isNotEmpty
+        _hasEmojis
             ? Wrap(
-              spacing: 12,
-              runSpacing: 16,
-              alignment: WrapAlignment.spaceEvenly,
-              children: List.generate(
-                topEmojisList.length,
-                (index) => _buildEmojiItem(
-                  topEmojisList[index].key,
-                  topEmojisList[index].value,
-                  index,
+                spacing: 12,
+                runSpacing: 16,
+                alignment: WrapAlignment.spaceEvenly,
+                children: List.generate(
+                  _emojiList.length,
+                  (index) => _buildEmojiItem(_emojiList[index]),
                 ),
-              ),
-            )
+              )
             : const Center(
-              child: Padding(
-                padding: EdgeInsets.symmetric(vertical: 30.0),
-                child: Text(
-                  "No emojis found in chat",
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: ColorUtils.whatsappSecondaryText,
-                    fontStyle: FontStyle.italic,
+                child: Padding(
+                  padding: EdgeInsets.symmetric(vertical: 30.0),
+                  child: Text(
+                    "No emojis found in chat",
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: ColorUtils.whatsappSecondaryText,
+                      fontStyle: FontStyle.italic,
+                    ),
                   ),
                 ),
               ),
-            ),
 
         const SizedBox(height: 20),
 
         // Emoji statistics
-        topEmojisList.isNotEmpty
-            ? Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: const Color.fromARGB(255, 249, 246, 246),
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: Column(
-                children: [
-                  const Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        Icons.emoji_emotions_rounded,
-                        color: ColorUtils.whatsappSecondaryText,
-                        size: 16,
-                      ),
-
-                      SizedBox(width: 8),
-
-                      Text(
-                        "Emoji Stats",
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
-                          color: ColorUtils.whatsappDarkGreen,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 12),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      _buildEmojiStat(
-                        (totalEmojis / messageData.messageCount)
-                            .toStringAsFixed(2),
-                        "Per Message",
-                      ),
-
-                      Container(height: 24, width: 1, color: ColorUtils.whatsappDivider),
-                      
-                      _buildEmojiStat(
-                        "${((messageData.messageCount > 0) ? (totalEmojis / messageData.messageCount * 100).round() : 0)}%",
-                        "Of Messages",
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            )
-            : const SizedBox.shrink(),
+        if (_hasEmojis) _buildStatsSection(),
       ],
+    );
+  }
+
+  Widget _buildStatsSection() {
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: const Color.fromARGB(255, 249, 246, 246),
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          children: [
+            const Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.emoji_emotions_rounded,
+                  color: ColorUtils.whatsappSecondaryText,
+                  size: 16,
+                ),
+                SizedBox(width: 8),
+                Text(
+                  "Emoji Stats",
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                    color: ColorUtils.whatsappDarkGreen,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                _buildEmojiStat(_stats.perMessage, "Per Message"),
+                DecoratedBox(
+                  decoration: const BoxDecoration(
+                    color: ColorUtils.whatsappDivider,
+                  ),
+                  child: const SizedBox(height: 24, width: 1),
+                ),
+                _buildEmojiStat(_stats.messagePercentage, "Of Messages"),
+              ],
+            ),
+          ],
+        ),
+      ),
     );
   }
 
@@ -160,23 +225,23 @@ class EmojiAnalysisWidget extends StatelessWidget {
         const SizedBox(height: 4),
         Text(
           label,
-          style: const TextStyle(fontSize: 12, color: ColorUtils.whatsappSecondaryText),
+          style: const TextStyle(
+            fontSize: 12, 
+            color: ColorUtils.whatsappSecondaryText,
+          ),
         ),
       ],
     );
   }
 
-  Widget _buildEmojiItem(String emoji, int count, int index) {
-    Color borderColor = Colors.transparent;
-
+  Widget _buildEmojiItem(_EmojiData emojiData) {
     return Column(
       children: [
-        Container(
-          padding: const EdgeInsets.all(10),
+        DecoratedBox(
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: borderColor, width: 2),
+            border: Border.all(color: Colors.transparent, width: 2),
             boxShadow: [
               BoxShadow(
                 color: Colors.black.withAlpha(50),
@@ -185,11 +250,17 @@ class EmojiAnalysisWidget extends StatelessWidget {
               ),
             ],
           ),
-          child: Text(emoji, style: const TextStyle(fontSize: 24)),
+          child: Padding(
+            padding: const EdgeInsets.all(10),
+            child: Text(
+              emojiData.emoji, 
+              style: const TextStyle(fontSize: 24),
+            ),
+          ),
         ),
         const SizedBox(height: 6),
         Text(
-          count.toString(),
+          emojiData.count.toString(),
           style: const TextStyle(
             fontWeight: FontWeight.bold,
             color: ColorUtils.whatsappTextColor,

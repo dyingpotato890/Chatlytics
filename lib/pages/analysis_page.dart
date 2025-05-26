@@ -25,6 +25,75 @@ class AnalysisPage extends StatefulWidget {
 }
 
 class _AnalysisPageState extends State<AnalysisPage> {
+  late final List<_PanelItem> _panelItems;
+
+  @override
+  void initState() {
+    super.initState();
+    
+    _panelItems = [
+      _PanelItem(
+        title: "Messages per User",
+        icon: Icons.people_alt_rounded,
+        builder: () => MessagesPerUserWidget(messageData: widget.messageData),
+      ),
+
+      _PanelItem(
+        title: "Chat Streaks",
+        icon: Icons.star_rounded,
+        builder: () => DayStreakWidget(messageData: widget.messageData),
+      ),
+
+      _PanelItem(
+        title: "First & Last Messages",
+        icon: Icons.people_alt_rounded,
+        builder: () => FirstLastMessageWidget(messageData: widget.messageData),
+      ),
+
+      _PanelItem(
+        title: "Top 100 Words",
+        icon: Icons.text_fields_rounded,
+        builder: () => TopWordsWidget(messageData: widget.messageData),
+      ),
+
+      _PanelItem(
+        title: "Emoji Analysis",
+        icon: Icons.emoji_emotions_rounded,
+        builder: () => EmojiAnalysisWidget(messageData: widget.messageData),
+      ),
+
+      _PanelItem(
+        title: "Hourly Activity",
+        icon: Icons.schedule_rounded,
+        builder: () => MostTalkedHoursWidget(messageData: widget.messageData),
+      ),
+
+      _PanelItem(
+        title: "Most Active Days",
+        icon: Icons.calendar_today_rounded,
+        builder: () => MostTalkedDaysWidget(messageData: widget.messageData),
+      ),
+
+      _PanelItem(
+        title: "Weekly Analysis",
+        icon: Icons.date_range_rounded,
+        builder: () => ChatByWeekWidget(messageData: widget.messageData),
+      ),
+
+      _PanelItem(
+        title: "Monthly Activity",
+        icon: Icons.date_range_rounded,
+        builder: () => ChatByMonthWidget(messageData: widget.messageData),
+      ),
+
+      _PanelItem(
+        title: "Yearly Activity",
+        icon: Icons.date_range_rounded,
+        builder: () => ChatByYearWidget(messageData: widget.messageData),
+      ),
+    ];
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -37,7 +106,7 @@ class _AnalysisPageState extends State<AnalysisPage> {
             color: Colors.white,
           ),
         ),
-        backgroundColor: const Color(0xFF25D366), // WhatsApp light green
+        backgroundColor: const Color(0xFF25D366),
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, size: 24, color: Colors.white),
@@ -50,36 +119,43 @@ class _AnalysisPageState extends State<AnalysisPage> {
         ),
       ),
       backgroundColor: ColorUtils.whatsappDivider,
-
+      
       body: SafeArea(
-        child: SingleChildScrollView(
+        child: ListView.builder(
           physics: const BouncingScrollPhysics(),
-          child: Column(
-            children: [
-              // Header with date range
-              Container(
+          itemCount: _panelItems.length + 3,
+          itemBuilder: (context, index) {
+            // Header with date range
+            if (index == 0) {
+              return Container(
                 padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
                 alignment: Alignment.centerLeft,
                 child: Text(
                   "${widget.messageData.firstMessage.date} - ${widget.messageData.lastMessage.date}",
-                  style: TextStyle(
-                    color: Color(0xFF667781), // WhatsApp secondary text color
+                  style: const TextStyle(
+                    color: Color(0xFF667781),
                     fontSize: 14,
                     fontWeight: FontWeight.w500,
                   ),
                 ),
-              ),
-
-              OverviewWidget(messageData: widget.messageData),
-
-              Padding(
+              );
+            }
+            
+            // Overview widget
+            if (index == 1) {
+              return OverviewWidget(messageData: widget.messageData);
+            }
+            
+            // Section title
+            if (index == 2) {
+              return Padding(
                 padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
                 child: Row(
                   children: const [
                     Text(
                       "DETAILED INSIGHTS",
                       style: TextStyle(
-                        color: Color(0xFF075E54), // WhatsApp dark green
+                        color: Color(0xFF075E54),
                         fontSize: 14,
                         fontWeight: FontWeight.bold,
                         letterSpacing: 1.0,
@@ -87,93 +163,34 @@ class _AnalysisPageState extends State<AnalysisPage> {
                     ),
                   ],
                 ),
-              ),
-
-              // Messages per user panel
-              PanelWidget(
-                title: "Messages per User",
-                color: ColorUtils.whatsappLightBackground,
-                icon: Icons.people_alt_rounded,
-                content: MessagesPerUserWidget(messageData: widget.messageData),
-              ),
-
-              // Streaks
-              PanelWidget(
-                title: "Chat Streaks",
-                color: ColorUtils.whatsappLightBackground,
-                icon: Icons.star_rounded,
-                content: DayStreakWidget(messageData: widget.messageData),
-              ),
-
-              // First And Last Messages
-              PanelWidget(
-                title: "Messages per User",
-                color: ColorUtils.whatsappLightBackground,
-                icon: Icons.people_alt_rounded,
-                content: FirstLastMessageWidget(
-                  messageData: widget.messageData,
-                ),
-              ),
-
-              // Top Words panel
-              PanelWidget(
-                title: "Top 100 Words",
-                color: ColorUtils.whatsappLightBackground,
-                icon: Icons.text_fields_rounded,
-                content: TopWordsWidget(messageData: widget.messageData),
-              ),
-
-              // Emoji Analysis panel
-              PanelWidget(
-                title: "Emoji Analysis",
-                color: ColorUtils.whatsappLightBackground,
-                icon: Icons.emoji_emotions_rounded,
-                content: EmojiAnalysisWidget(messageData: widget.messageData),
-              ),
-
-              // Hours(s) Analysis
-              PanelWidget(
-                title: "Hourly Activity",
-                color: ColorUtils.whatsappLightBackground,
-                icon: Icons.schedule_rounded,
-                content: MostTalkedHoursWidget(messageData: widget.messageData),
-              ),
-
-              // Day(s) Analysis
-              PanelWidget(
-                title: "Most Active Days",
-                color: ColorUtils.whatsappLightBackground,
-                icon: Icons.calendar_today_rounded,
-                content: MostTalkedDaysWidget(messageData: widget.messageData),
-              ),
-
-              // Week Analysis
-              PanelWidget(
-                title: "Weekly Analysis",
-                color: ColorUtils.whatsappLightBackground,
-                icon: Icons.date_range_rounded,
-                content: ChatByWeekWidget(messageData: widget.messageData),
-              ),
-
-              // Months(s) Analysis
-              PanelWidget(
-                title: "Monthly Activity",
-                color: ColorUtils.whatsappLightBackground,
-                icon: Icons.date_range_rounded,
-                content: ChatByMonthWidget(messageData: widget.messageData),
-              ),
-
-              // Year(s) Analysis
-              PanelWidget(
-                title: "Yearly Activity",
-                color: ColorUtils.whatsappLightBackground,
-                icon: Icons.date_range_rounded,
-                content: ChatByYearWidget(messageData: widget.messageData),
-              ),
-            ],
-          ),
+              );
+            }
+            
+            // Panel items
+            final panelIndex = index - 3;
+            final panel = _panelItems[panelIndex];
+            
+            return PanelWidget(
+              title: panel.title,
+              color: ColorUtils.whatsappLightBackground,
+              icon: panel.icon,
+              content: panel.builder(),
+            );
+          },
         ),
       ),
     );
   }
+}
+
+class _PanelItem {
+  final String title;
+  final IconData icon;
+  final Widget Function() builder;
+
+  _PanelItem({
+    required this.title,
+    required this.icon,
+    required this.builder,
+  });
 }

@@ -226,9 +226,7 @@ class ChatByYearWidget extends StatelessWidget {
                   const SizedBox(height: 4),
 
                   // Bar (minimum height of 2 for years with 0 messages)
-                  AnimatedContainer(
-                    duration: const Duration(milliseconds: 800),
-                    curve: Curves.easeOutQuart,
+                  Container(
                     height: (80 * percentage).clamp(
                       entry.value == 0 ? 2 : 8,
                       80,

@@ -2,43 +2,80 @@ import 'package:flutter/material.dart';
 import 'package:chatlytics/widgets/colors.dart';
 import 'package:chatlytics/models/data.dart';
 
-class MostTalkedDaysWidget extends StatelessWidget {
+class _DayData {
+  final String key;
+  final String displayName;
+  final int messages;
+
+  const _DayData({
+    required this.key,
+    required this.displayName,
+    required this.messages,
+  });
+}
+
+class MostTalkedDaysWidget extends StatefulWidget {
   final Data messageData;
 
   const MostTalkedDaysWidget({super.key, required this.messageData});
 
   @override
-  Widget build(BuildContext context) {
-    // Get days data and sort by value (message count) in descending order
-    final Map<String, int> daysData = Map.from(messageData.mostTalkedDays);
-    final List<MapEntry<String, int>> sortedDays = daysData.entries.toList()
-      ..sort((a, b) => b.value.compareTo(a.value));
-        
-    // Function to convert day number to name
-    String getDayName(String dayNumber) {
-      final List<String> days = [
-        'Monday', 'Tuesday', 'Wednesday', 
-        'Thursday', 'Friday', 'Saturday', 'Sunday'
-      ];
-      
-      try {
-        int index = int.parse(dayNumber) - 1;
-        if (index >= 0 && index < days.length) {
-          return days[index];
-        }
-      } catch (e) {
-        // In case the day number is not in expected format
-      }
-      
-      return dayNumber;
-    }
+  State<MostTalkedDaysWidget> createState() => _MostTalkedDaysWidgetState();
+}
 
+class _MostTalkedDaysWidgetState extends State<MostTalkedDaysWidget> {
+  static const List<String> _dayNames = [
+    'Monday', 'Tuesday', 'Wednesday', 
+    'Thursday', 'Friday', 'Saturday', 'Sunday'
+  ];
+
+  late List<_DayData> _sortedDays;
+  late String _mostActiveDay;
+
+  @override
+  void initState() {
+    super.initState();
+    _precomputeData();
+  }
+
+  void _precomputeData() {
+    final Map<String, int> daysData = Map.from(widget.messageData.mostTalkedDays);
+    
+    // Pre-compute all day data with display names
+    _sortedDays = daysData.entries
+        .map((entry) => _DayData(
+              key: entry.key,
+              displayName: _getDayName(entry.key),
+              messages: entry.value,
+            ))
+        .toList()
+      ..sort((a, b) => b.messages.compareTo(a.messages));
+
+    // Pre-compute most active day
+    _mostActiveDay = _sortedDays.isNotEmpty 
+        ? _sortedDays.first.displayName 
+        : "";
+  }
+
+  String _getDayName(String dayNumber) {
+    try {
+      int index = int.parse(dayNumber) - 1;
+      if (index >= 0 && index < _dayNames.length) {
+        return _dayNames[index];
+      }
+    } catch (e) {
+      // In case the day number is not in expected format
+    }
+    return dayNumber;
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         // Days summary header
-        Container(
-          width: double.infinity,
+        Padding(
           padding: const EdgeInsets.symmetric(vertical: 16),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -48,11 +85,14 @@ class MostTalkedDaysWidget extends StatelessWidget {
                 children: [
                   const Text(
                     "Most Active Days",
-                    style: TextStyle(fontSize: 14, color: ColorUtils.whatsappSecondaryText),
+                    style: TextStyle(
+                      fontSize: 14, 
+                      color: ColorUtils.whatsappSecondaryText
+                    ),
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    getDayName(sortedDays.isNotEmpty ? sortedDays.first.key : ""),
+                    _mostActiveDay,
                     style: const TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
@@ -61,16 +101,18 @@ class MostTalkedDaysWidget extends StatelessWidget {
                   ),
                 ],
               ),
-              Container(
-                padding: const EdgeInsets.all(12),
+              DecoratedBox(
                 decoration: BoxDecoration(
                   color: ColorUtils.whatsappLightGreen,
                   borderRadius: BorderRadius.circular(16),
                 ),
-                child: const Icon(
-                  Icons.calendar_today_rounded,
-                  color: Colors.white,
-                  size: 28,
+                child: const Padding(
+                  padding: EdgeInsets.all(12),
+                  child: Icon(
+                    Icons.calendar_today_rounded,
+                    color: Colors.white,
+                    size: 28,
+                  ),
                 ),
               ),
             ],
@@ -78,37 +120,34 @@ class MostTalkedDaysWidget extends StatelessWidget {
         ),
 
         const Divider(color: ColorUtils.whatsappDivider, height: 20),
-        SizedBox(height: 10,),
+        const SizedBox(height: 10),
 
-        // Days breakdown
-        ...sortedDays.take(7).map((entry) {
-          final String dayKey = entry.key;
-          final String dayName = getDayName(dayKey);
-          final int dayMessages = entry.value;
-
-          return Container(
-            margin: const EdgeInsets.only(bottom: 16),
-            padding: EdgeInsets.symmetric(horizontal: 10),
+        // Pre-built days breakdown
+        ..._sortedDays.take(7).map((dayData) {
+          return Padding(
+            padding: const EdgeInsets.only(bottom: 16, left: 10, right: 10),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Row(
                   children: [
-                    Container(
-                      padding: const EdgeInsets.all(8),
+                    DecoratedBox(
                       decoration: BoxDecoration(
                         color: ColorUtils.whatsappLightGreen.withAlpha(26),
                         borderRadius: BorderRadius.circular(10),
                       ),
-                      child: const Icon(
-                        Icons.calendar_today,
-                        size: 18,
-                        color: ColorUtils.whatsappSecondaryText,
+                      child: const Padding(
+                        padding: EdgeInsets.all(8),
+                        child: Icon(
+                          Icons.calendar_today,
+                          size: 18,
+                          color: ColorUtils.whatsappSecondaryText,
+                        ),
                       ),
                     ),
                     const SizedBox(width: 12),
                     Text(
-                      dayName,
+                      dayData.displayName,
                       style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w500,
@@ -117,21 +156,23 @@ class MostTalkedDaysWidget extends StatelessWidget {
                     ),
                   ],
                 ),
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 4,
-                  ),
+                DecoratedBox(
                   decoration: BoxDecoration(
                     color: ColorUtils.whatsappLightGreen.withAlpha(50),
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: Text(
-                    "$dayMessages",
-                    style: const TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
-                      color: ColorUtils.whatsappDarkGreen,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 4,
+                    ),
+                    child: Text(
+                      "${dayData.messages}",
+                      style: const TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                        color: ColorUtils.whatsappDarkGreen,
+                      ),
                     ),
                   ),
                 ),
