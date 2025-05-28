@@ -249,12 +249,14 @@ class _AIAnalysisPageState extends State<AIAnalysisPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'AI Daily Analysis',
-          style: TextStyle(
-            fontWeight: FontWeight.w600,
-            fontSize: 20,
-            color: Colors.white,
+        title: Center(
+          child: const Text(
+            'AI Daily Analysis',
+            style: TextStyle(
+              fontWeight: FontWeight.w600,
+              fontSize: 20,
+              color: Colors.white,
+            ),
           ),
         ),
         backgroundColor: const Color(0xFF25D366),
