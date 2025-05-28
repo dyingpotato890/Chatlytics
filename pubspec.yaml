@@ -40,8 +40,8 @@ dependencies:
   path_provider: ^2.1.5
   intl: ^0.20.2
   share_handler: ^0.0.22
-  firebase_core: ^3.13.1
-  firebase_vertexai: ^1.7.0
+  http: ^1.4.0
+  flutter_dotenv: ^5.2.1
 
 dev_dependencies:
   flutter_test:
@@ -77,6 +77,7 @@ flutter:
   # To add assets to your application, add an assets section, like this:
   assets:
     - assets/img/
+    - .env
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg
 

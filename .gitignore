@@ -44,14 +44,5 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 
-# Firebase
-android/app/google-services.json
-ios/Runner/GoogleService-Info.plist
-lib/firebase_options.dart
-firebase.json
-
-.firebaserc
-firestore.rules
-
 # Additional
 /.env

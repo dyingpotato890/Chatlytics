@@ -6,6 +6,8 @@ import 'package:flutter_archive/flutter_archive.dart';
 import 'package:path_provider/path_provider.dart';
 
 class Whatsapp {
+  Map<String, List<Message>> messagesByDate = <String, List<Message>>{};
+
   final RegExp messageLineRegex = RegExp(
     r'^(\d{1,2}\/\d{1,2}\/\d{2,4}),\s+(\d{1,2}:\d{2}(?::\d{2})?\s*(?:[AaPp][Mm])?)\s*[--]\s*([^:]+?):\s*(.*)$',
     caseSensitive: false,
@@ -196,6 +198,14 @@ class Whatsapp {
     };
   }
 
+  String getFormattedMessagesForDay(String date) {
+    if (!messagesByDate.containsKey(date)) return '';
+
+    return messagesByDate[date]!
+        .map((msg) => '${msg.time} - ${msg.sender}: ${msg.message}')
+        .join('\n');
+  }
+
   void processMessage(
     String date,
     String time,
@@ -286,6 +296,14 @@ class Whatsapp {
 
       // Chat by Week Day
       messageData.weekCount[weekDay] = messageData.weekCount[weekDay]! + 1;
+
+      // Group messages by date for AI analysis
+      if (!messageData.messagesByDate.containsKey(dayKey.trim())) {
+        messageData.messagesByDate[dayKey.trim()] = <Message>[];
+      }
+      messageData.messagesByDate[dayKey.trim()]!.add(
+        Message(date: date, time: time, sender: sender, message: message ?? ''),
+      );
 
       // Process message content if available
       if (message != null && message.isNotEmpty) {
@@ -526,6 +544,7 @@ class Whatsapp {
       highestDayStreak: 0,
       longestStreak: null,
       allStreaks: <StreakInfo>[],
+      messagesByDate: <String, List<Message>>{},
     );
   }
 

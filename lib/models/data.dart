@@ -20,6 +20,7 @@ class Data {
   int highestDayStreak;
   StreakInfo? longestStreak;
   List<StreakInfo> allStreaks;
+  Map<String, List<Message>> messagesByDate;
 
   Data({
     required this.messageCount,
@@ -40,5 +41,6 @@ class Data {
     required this.highestDayStreak,
     this.longestStreak,
     required this.allStreaks,
+    required this.messagesByDate,
   });
 }

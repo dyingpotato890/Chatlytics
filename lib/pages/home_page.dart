@@ -50,6 +50,7 @@ class _HomePageState extends State<HomePage> {
     highestDayStreak: 0,
     longestStreak: null,
     allStreaks: [],
+    messagesByDate: {},
   );
 
   @override

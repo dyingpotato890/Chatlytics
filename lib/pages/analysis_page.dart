@@ -1,5 +1,6 @@
 import 'package:chatlytics/models/data.dart';
 import 'package:chatlytics/pages/home_page.dart';
+import 'package:chatlytics/widgets/ai_summary.dart';
 import 'package:chatlytics/widgets/chats_per_week.dart';
 import 'package:chatlytics/widgets/chats_per_year.dart';
 import 'package:chatlytics/widgets/colors.dart';
@@ -30,7 +31,7 @@ class _AnalysisPageState extends State<AnalysisPage> {
   @override
   void initState() {
     super.initState();
-    
+
     _panelItems = [
       _PanelItem(
         title: "Messages per User",
@@ -91,6 +92,12 @@ class _AnalysisPageState extends State<AnalysisPage> {
         icon: Icons.date_range_rounded,
         builder: () => ChatByYearWidget(messageData: widget.messageData),
       ),
+
+      _PanelItem(
+        title: "AI Daily Analysis",
+        icon: Icons.psychology_rounded,
+        builder: () => AIDailyAnalysisWidget(messageData: widget.messageData),
+      ),
     ];
   }
 
@@ -119,7 +126,7 @@ class _AnalysisPageState extends State<AnalysisPage> {
         ),
       ),
       backgroundColor: ColorUtils.whatsappDivider,
-      
+
       body: SafeArea(
         child: ListView.builder(
           physics: const BouncingScrollPhysics(),
@@ -140,12 +147,12 @@ class _AnalysisPageState extends State<AnalysisPage> {
                 ),
               );
             }
-            
+
             // Overview widget
             if (index == 1) {
               return OverviewWidget(messageData: widget.messageData);
             }
-            
+
             // Section title
             if (index == 2) {
               return Padding(
@@ -165,11 +172,11 @@ class _AnalysisPageState extends State<AnalysisPage> {
                 ),
               );
             }
-            
+
             // Panel items
             final panelIndex = index - 3;
             final panel = _panelItems[panelIndex];
-            
+
             return PanelWidget(
               title: panel.title,
               color: ColorUtils.whatsappLightBackground,
@@ -188,9 +195,5 @@ class _PanelItem {
   final IconData icon;
   final Widget Function() builder;
 
-  _PanelItem({
-    required this.title,
-    required this.icon,
-    required this.builder,
-  });
+  _PanelItem({required this.title, required this.icon, required this.builder});
 }
