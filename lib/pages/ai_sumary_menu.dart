@@ -41,13 +41,10 @@ class _AIAnalysisPageState extends State<AIAnalysisPage> {
             .timeout(const Duration(seconds: 60));
 
         if (wakeResponse.statusCode == 200) {
-          print("Service wake call successful");
-          // Now test the connection
           await _testAIConnection();
         }
       } catch (e) {
-        print("Wake up call failed: $e");
-        // Continue anyway - service might still work
+        // Ignore
       }
     }
   }
@@ -65,7 +62,6 @@ class _AIAnalysisPageState extends State<AIAnalysisPage> {
           setState(() {
             isServiceReady = true;
           });
-          print("AI service connection successful");
         } else {
           _showErrorSnackBar("AI service test failed: ${data['message']}");
         }
@@ -76,7 +72,6 @@ class _AIAnalysisPageState extends State<AIAnalysisPage> {
       }
     } catch (e) {
       _showErrorSnackBar("AI service error: Cannot connect to backend");
-      print("Connection test error: $e");
     }
   }
 
@@ -89,7 +84,6 @@ class _AIAnalysisPageState extends State<AIAnalysisPage> {
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
-        print("Health check: $data");
 
         if (data['gemini_model_loaded'] == false) {
           _showErrorSnackBar(
@@ -98,7 +92,7 @@ class _AIAnalysisPageState extends State<AIAnalysisPage> {
         }
       }
     } catch (e) {
-      print("Health check failed: $e");
+      // Ignore
     }
   }
 
