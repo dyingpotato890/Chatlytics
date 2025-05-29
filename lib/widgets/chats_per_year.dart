@@ -7,6 +7,11 @@ class ChatByYearWidget extends StatelessWidget {
 
   const ChatByYearWidget({super.key, required this.messageData});
 
+  String _formatYear(String year) {
+    // If year is in YY format (2 digits), prepend "20"
+    return year.length == 2 ? "20$year" : year;
+  }
+
   @override
   Widget build(BuildContext context) {
     // Get year data
@@ -53,7 +58,7 @@ class ChatByYearWidget extends StatelessWidget {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    "20${mostActiveYear.key}",
+                    _formatYear(mostActiveYear.key),
                     style: const TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
@@ -143,7 +148,7 @@ class ChatByYearWidget extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        "20$year",
+                        _formatYear(year),
                         style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w600,

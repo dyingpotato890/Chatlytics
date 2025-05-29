@@ -817,11 +817,18 @@ class _AIAnalysisPageState extends State<AIAnalysisPage> {
   }
 
   String _getDateKey(DateTime date) {
-    // Format date to DD/MM/YY format for messagesByDate
+    // Format date to match both DD/MM/YY and DD/MM/YYYY formats
     final day = date.day.toString().padLeft(2, '0');
     final month = date.month.toString().padLeft(2, '0');
-    final year = date.year.toString().substring(2);
-    return "$day/$month/$year";
+    final year = date.year.toString();
+    final shortYear = year.substring(2);
+    
+    // Try both formats when looking up messages
+    final yyFormat = "$day/$month/$shortYear";
+    final yyyyFormat = "$day/$month/$year";
+    
+    // Return the format that exists in messagesByDate, defaulting to YY format
+    return widget.messageData.messagesByDate.containsKey(yyyyFormat) ? yyyyFormat : yyFormat;
   }
 
   String _extractSentiment(String sentimentText) {

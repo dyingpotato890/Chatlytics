@@ -90,8 +90,9 @@ class Whatsapp {
     int month = int.parse(parts[1]);
     int year = int.parse(parts[2]);
 
-    // Handle 2-digit years
+    // Handle both YY and YYYY formats
     if (year < 100) {
+      // YY format - assume 20YY for years less than 100
       year += 2000;
     }
 
