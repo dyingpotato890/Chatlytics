@@ -47,3 +47,8 @@ A direct download link is provided here:
 ### Engagement & Behavior
 
 - Track your longest active messaging streaks.
+
+### AI-Powered Daily Summary
+
+- Get an automatic summary of your chats for any selected day.
+- Understand the key points and sentiment of your conversations effortlessly.
