@@ -781,10 +781,14 @@ class _AIAnalysisPageState extends State<AIAnalysisPage> {
   }
 
   Future<void> _selectDate() async {
+    DateTime firstMessageDate = _getYearKey(
+      widget.messageData.firstMessage.date,
+    );
+
     final DateTime? picked = await showDatePicker(
       context: context,
       initialDate: DateTime.now(),
-      firstDate: DateTime(2020),
+      firstDate: firstMessageDate,
       lastDate: DateTime.now(),
       builder: (context, child) {
         return Theme(
@@ -816,13 +820,41 @@ class _AIAnalysisPageState extends State<AIAnalysisPage> {
     final month = date.month.toString().padLeft(2, '0');
     final year = date.year.toString();
     final shortYear = year.substring(2);
-    
+
     // Try both formats when looking up messages
     final yyFormat = "$day/$month/$shortYear";
     final yyyyFormat = "$day/$month/$year";
-    
+
     // Return the format that exists in messagesByDate, defaulting to YY format
-    return widget.messageData.messagesByDate.containsKey(yyyyFormat) ? yyyyFormat : yyFormat;
+    return widget.messageData.messagesByDate.containsKey(yyyyFormat)
+        ? yyyyFormat
+        : yyFormat;
+  }
+
+  DateTime _getYearKey(String dateString) {
+    try {
+      List<String> parts = dateString.split('/');
+
+      if (parts.length == 3) {
+        int day = int.parse(parts[0]);
+        int month = int.parse(parts[1]);
+        int year = int.parse(parts[2]);
+
+        if (year < 100) {
+          if (year > 50) {
+            year += 1900;
+          } else {
+            year += 2000;
+          }
+        }
+
+        return DateTime(year, month, day);
+      } else {
+        return DateTime(2009);
+      }
+    } catch (e) {
+      return DateTime(2009);
+    }
   }
 
   String _extractSentiment(String sentimentText) {
