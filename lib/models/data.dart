@@ -11,6 +11,9 @@ class Data {
   Message firstMessage;
   Message lastMessage;
   Map<String, int> mostUsedWords;
+  Map<String, int> mostUsedCussWords;
+  Map<String, int> cussWordsByLanguage;
+  Map<String, int> personMostUsedCussWords;
   Map<String, int> mostUsedEmojies;
   Map<String, int> mostTalkedDays;
   Map<String, int> mostTalkedHours;
@@ -32,6 +35,9 @@ class Data {
     required this.firstMessage,
     required this.lastMessage,
     required this.mostUsedWords,
+    required this.cussWordsByLanguage,
+    required this.mostUsedCussWords,
+    required this.personMostUsedCussWords,
     required this.mostUsedEmojies,
     required this.mostTalkedDays,
     required this.mostTalkedHours,

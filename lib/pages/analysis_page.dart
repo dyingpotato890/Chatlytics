@@ -13,6 +13,7 @@ import 'package:chatlytics/widgets/chats_per_months.dart';
 import 'package:chatlytics/widgets/overview.dart';
 import 'package:chatlytics/widgets/panel.dart';
 import 'package:chatlytics/widgets/streak.dart';
+import 'package:chatlytics/widgets/top_cuss_words.dart';
 import 'package:chatlytics/widgets/top_words.dart';
 import 'package:flutter/material.dart';
 
@@ -55,6 +56,12 @@ class _AnalysisPageState extends State<AnalysisPage> {
         title: "Top 100 Words",
         icon: Icons.text_fields_rounded,
         builder: () => TopWordsWidget(messageData: widget.messageData),
+      ),
+
+      _PanelItem(
+        title: "Top Cuss Words",
+        icon: Icons.warning_rounded,
+        builder: () => TopCussWordsWidget(messageData: widget.messageData),
       ),
 
       _PanelItem(
