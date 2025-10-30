@@ -55,6 +55,7 @@ class Whatsapp {
     "hers", "herself", "itself", "their", "theirs", "themselves", "whose"
   ];
 
+  int totalLinks = 0;
 
   final RegExp messageLineRegex = RegExp(
     r'^(\d{1,2}\/\d{1,2}\/\d{2,4}),\s+(\d{1,2}:\d{2}(?::\d{2})?\s*(?:[AaPp][Mm])?)\s*[--]\s*([^:]+?):\s*(.*)$',
@@ -275,6 +276,123 @@ class Whatsapp {
         .join('\n');
   }
 
+  // Platform detection regexes
+  final Map<String, RegExp> platformRegexes = {
+    'YouTube': RegExp(
+      r'(https?://)?(www\.)?(youtube\.com|youtu\.be)/',
+      caseSensitive: false,
+    ),
+    'Instagram': RegExp(
+      r'(https?://)?(www\.)?instagram\.com/',
+      caseSensitive: false,
+    ),
+    'Twitter/X': RegExp(
+      r'(https?://)?(www\.)?(twitter\.com|x\.com)/',
+      caseSensitive: false,
+    ),
+    'Facebook': RegExp(
+      r'(https?://)?(www\.)?(facebook\.com|fb\.com)/',
+      caseSensitive: false,
+    ),
+    'LinkedIn': RegExp(
+      r'(https?://)?(www\.)?linkedin\.com/',
+      caseSensitive: false,
+    ),
+    'TikTok': RegExp(
+      r'(https?://)?(www\.)?tiktok\.com/',
+      caseSensitive: false,
+    ),
+    'Reddit': RegExp(
+      r'(https?://)?(www\.)?reddit\.com/',
+      caseSensitive: false,
+    ),
+    'WhatsApp': RegExp(
+      r'(https?://)?(www\.)?(chat\.whatsapp\.com|wa\.me)/',
+      caseSensitive: false,
+    ),
+    'Telegram': RegExp(
+      r'(https?://)?(www\.)?(t\.me|telegram\.me)/',
+      caseSensitive: false,
+    ),
+    'Spotify': RegExp(
+      r'(https?://)?(www\.)?open\.spotify\.com/',
+      caseSensitive: false,
+    ),
+    'GitHub': RegExp(
+      r'(https?://)?(www\.)?github\.com/',
+      caseSensitive: false,
+    ),
+    'Medium': RegExp(
+      r'(https?://)?(www\.)?medium\.com/',
+      caseSensitive: false,
+    ),
+    'Pinterest': RegExp(
+      r'(https?://)?(www\.)?pinterest\.com/',
+      caseSensitive: false,
+    ),
+    'Amazon': RegExp(
+      r'(https?://)?(www\.)?amazon\.(com|in|co\.uk|de|fr)/',
+      caseSensitive: false,
+    ),
+    'Flipkart': RegExp(
+      r'(https?://)?(www\.)?flipkart\.com/',
+      caseSensitive: false,
+    ),
+    'Google': RegExp(
+      r'(https?://)?(www\.)?(google\.com|docs\.google\.com|drive\.google\.com|maps\.google\.com)/',
+      caseSensitive: false,
+    ),
+    'Netflix': RegExp(
+      r'(https?://)?(www\.)?netflix\.com/',
+      caseSensitive: false,
+    ),
+    'Zoom': RegExp(
+      r'(https?://)?(www\.)?zoom\.us/',
+      caseSensitive: false,
+    ),
+    'Meet': RegExp(
+      r'(https?://)?meet\.google\.com/',
+      caseSensitive: false,
+    ),
+  };
+
+  // Generic URL regex to catch all links
+  final RegExp urlRegex = RegExp(
+    r'https?://[^\s]+',
+    caseSensitive: false,
+  );
+
+  // Add these methods to your Whatsapp class:
+
+  String _detectPlatform(String url) {
+    for (var entry in platformRegexes.entries) {
+      if (entry.value.hasMatch(url)) {
+        return entry.key;
+      }
+    }
+    return 'Other';
+  }
+
+  void _processLinks(String message, String sender, Data messageData) {
+    final matches = urlRegex.allMatches(message);
+    
+    for (var match in matches) {
+      String url = match.group(0)!;
+      totalLinks++;
+      
+      // Detect platform
+      String platform = _detectPlatform(url);
+      
+      // Count by platform
+      messageData.linksByPlatform[platform] = 
+        (messageData.linksByPlatform[platform] ?? 0) + 1;
+      
+      // Count by user
+      messageData.linksSharedByUser[sender] = 
+        (messageData.linksSharedByUser[sender] ?? 0) + 1;
+    }
+  }
+
   void processMessage(
     String date,
     String time,
@@ -380,6 +498,9 @@ class Whatsapp {
         if (mediaRegex.hasMatch(message)) {
           messageData.mediaShared++;
         } else {
+          // URL Stuff
+          _processLinks(message, sender, messageData);
+
           // Extract words
           List<String> words =
               RegExp(r'\b\w+\b')
@@ -389,7 +510,7 @@ class Whatsapp {
 
           messageData.wordCount += words.length;
 
-          // TODO: Add cuss words, link counts
+          // TODO: Add link counts
           for (String word in words) {
             // Filter short words
             if (word.length > 3 && !isCommonWord(word)) {
@@ -630,6 +751,8 @@ class Whatsapp {
       longestStreak: null,
       allStreaks: <StreakInfo>[],
       messagesByDate: <String, List<Message>>{},
+      linksByPlatform: <String, int>{},
+      linksSharedByUser: <String, int>{},
     );
   }
 

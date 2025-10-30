@@ -54,6 +54,8 @@ class _HomePageState extends State<HomePage> {
     longestStreak: null,
     allStreaks: [],
     messagesByDate: {},
+    linksByPlatform: <String, int>{},
+    linksSharedByUser: <String, int>{},
   );
 
   @override

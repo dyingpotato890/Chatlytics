@@ -23,7 +23,9 @@ class Data {
   int highestDayStreak;
   StreakInfo? longestStreak;
   List<StreakInfo> allStreaks;
-  Map<String, List<Message>> messagesByDate;
+  Map<String, List<Message>> messagesByDate; 
+  Map<String, int> linksByPlatform;
+  Map<String, int> linksSharedByUser;
 
   Data({
     required this.messageCount,
@@ -48,5 +50,7 @@ class Data {
     this.longestStreak,
     required this.allStreaks,
     required this.messagesByDate,
+    required this.linksByPlatform,
+    required this.linksSharedByUser,
   });
 }

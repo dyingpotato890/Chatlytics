@@ -6,6 +6,7 @@ import 'package:chatlytics/widgets/chats_per_year.dart';
 import 'package:chatlytics/widgets/colors.dart';
 import 'package:chatlytics/widgets/emoji_analysis.dart';
 import 'package:chatlytics/widgets/first_last_message.dart';
+import 'package:chatlytics/widgets/link_analysis.dart';
 import 'package:chatlytics/widgets/messages_per_user.dart';
 import 'package:chatlytics/widgets/most_talked_days.dart';
 import 'package:chatlytics/widgets/most_talked_hours.dart';
@@ -38,6 +39,12 @@ class _AnalysisPageState extends State<AnalysisPage> {
         title: "Messages per User",
         icon: Icons.people_alt_rounded,
         builder: () => MessagesPerUserWidget(messageData: widget.messageData),
+      ),
+
+      _PanelItem(
+        title: "Link Analysis",
+        icon: Icons.link_rounded,
+        builder: () => LinkAnalysisWidget(messageData: widget.messageData),
       ),
 
       _PanelItem(
