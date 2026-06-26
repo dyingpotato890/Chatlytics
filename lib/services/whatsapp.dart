@@ -53,6 +53,12 @@ class Whatsapp {
     caseSensitive: false,
   );
 
+  final RegExp deletedMessageRegex = RegExp(
+    r'This message was deleted',
+    caseSensitive: false,
+  );
+
+
   // System message detection regex
   final RegExp systemMessageRegex = RegExp(
     r"^(Messages and calls are end-to-end encrypted|(?:You|.+) (?:pinned a message|changed the group description|changed the subject|changed this group's icon|added .+|removed .+|left$|joined))$",
@@ -477,8 +483,12 @@ class Whatsapp {
 
       // Process message content if available
       if (message != null && message.isNotEmpty) {
+        // Check for deleted messages
+        if (deletedMessageRegex.hasMatch(message)) {
+          messageData.deletedMessages[sender] =
+              (messageData.deletedMessages[sender] ?? 0) + 1;
         // Check for media
-        if (mediaRegex.hasMatch(message)) {
+        } else if (mediaRegex.hasMatch(message)) {
           messageData.mediaShared++;
         } else {
           // URL Stuff
@@ -779,6 +789,7 @@ class Whatsapp {
       avgResponseTime: <String, int>{},
       responseCount: <String, int>{},
       conversationStarters: <String, int>{},
+      deletedMessages: <String, int>{},
     );
   }
 

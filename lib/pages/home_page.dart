@@ -59,6 +59,7 @@ class _HomePageState extends State<HomePage> {
     avgResponseTime: <String, int>{},
     responseCount: <String, int>{},
     conversationStarters: <String, int>{},
+    deletedMessages: <String, int>{},
   );
 
   @override

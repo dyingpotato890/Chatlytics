@@ -8,6 +8,7 @@ import 'package:chatlytics/widgets/emoji_analysis.dart';
 import 'package:chatlytics/widgets/first_last_message.dart';
 import 'package:chatlytics/widgets/link_analysis.dart';
 import 'package:chatlytics/widgets/conversation_starter.dart';
+import 'package:chatlytics/widgets/message_breakdown.dart';
 import 'package:chatlytics/widgets/response_time.dart';
 import 'package:chatlytics/widgets/messages_per_user.dart';
 import 'package:chatlytics/widgets/most_talked_days.dart';
@@ -53,6 +54,12 @@ class _AnalysisPageState extends State<AnalysisPage> {
         title: "Conversation Starters",
         icon: Icons.wb_sunny_rounded,
         builder: () => ConversationStarterWidget(messageData: widget.messageData),
+      ),
+
+      _PanelItem(
+        title: "Deleted Messages",
+        icon: Icons.delete_outline_rounded,
+        builder: () => MessageBreakdownWidget(messageData: widget.messageData),
       ),
 
       _PanelItem(

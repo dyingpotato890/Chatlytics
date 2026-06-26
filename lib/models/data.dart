@@ -29,6 +29,7 @@ class Data {
   Map<String, int> avgResponseTime;
   Map<String, int> responseCount;
   Map<String, int> conversationStarters;
+  Map<String, int> deletedMessages;
 
   Data({
     required this.messageCount,
@@ -58,5 +59,6 @@ class Data {
     required this.avgResponseTime,
     required this.responseCount,
     required this.conversationStarters,
+    required this.deletedMessages,
   });
 }
