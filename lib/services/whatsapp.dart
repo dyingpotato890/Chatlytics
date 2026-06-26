@@ -111,6 +111,26 @@ class Whatsapp {
     }
   }
 
+  DateTime _parseDateTime(String date, String time) {
+    final d = _parseDate(date);
+    final cleaned = time.trim();
+    int hour = 0, minute = 0;
+    if (cleaned.toLowerCase().contains('am') || cleaned.toLowerCase().contains('pm')) {
+      final isPM = cleaned.toLowerCase().contains('pm');
+      final digits = cleaned.replaceAll(RegExp(r'[^0-9:]'), '');
+      final parts = digits.split(':');
+      hour = int.parse(parts[0]);
+      minute = int.parse(parts[1]);
+      if (isPM && hour != 12) hour += 12;
+      if (!isPM && hour == 12) hour = 0;
+    } else {
+      final parts = cleaned.split(':');
+      hour = int.parse(parts[0]);
+      minute = int.parse(parts[1]);
+    }
+    return DateTime(d.year, d.month, d.day, hour, minute);
+  }
+
   DateTime _parseDate(String date) {
     List<String> parts = date.split('/');
     int day = int.parse(parts[0]);
@@ -581,6 +601,10 @@ class Whatsapp {
       final Set<String> uniqueDays = {};
       final Set<String> uniqueParticipants = {};
       final List<DateTime> messageDates = [];
+      DateTime? lastMsgDateTime;
+      String? lastMsgSender;
+      final Map<String, List<int>> responseTimes = {};
+      final Map<String, int> allResponseCounts = {};
 
       filePath = filePath ?? "";
 
@@ -616,6 +640,33 @@ class Whatsapp {
                 uniqueParticipants,
                 messageDates,
               );
+            }
+
+            // Response time tracking
+            final newDate = match.group(1)!;
+            final newTime = match.group(2)!;
+            final newSender = match.group(3)?.trim() ?? '';
+            final newMsg = match.group(4) ?? '';
+            if (!isSystemMessage(newSender, newMsg) &&
+                lastMsgSender != null &&
+                lastMsgSender != newSender &&
+                lastMsgDateTime != null) {
+              try {
+                final newDateTime = _parseDateTime(newDate, newTime);
+                final gap = newDateTime.difference(lastMsgDateTime).inSeconds;
+                if (gap > 0) {
+                  allResponseCounts[newSender] = (allResponseCounts[newSender] ?? 0) + 1;
+                  if (gap < 21600) {
+                    responseTimes.putIfAbsent(newSender, () => []).add(gap);
+                  }
+                }
+              } catch (_) {}
+            }
+            if (!isSystemMessage(newSender, newMsg)) {
+              try {
+                lastMsgDateTime = _parseDateTime(newDate, newTime);
+                lastMsgSender = newSender;
+              } catch (_) {}
             }
 
             // Start new message
@@ -670,6 +721,15 @@ class Whatsapp {
         messageData.highestDayStreak = streakData['highestDayStreak'];
         messageData.longestStreak = streakData['longestStreak'];
         messageData.allStreaks = streakData['allStreaks'];
+
+        for (final user in allResponseCounts.keys) {
+          messageData.responseCount[user] = allResponseCounts[user]!;
+          final times = responseTimes[user];
+          if (times != null && times.isNotEmpty) {
+            final avg = (times.reduce((a, b) => a + b) / times.length).round();
+            messageData.avgResponseTime[user] = avg;
+          }
+        }
       }
 
       return messageData;
@@ -713,6 +773,8 @@ class Whatsapp {
       messagesByDate: <String, List<Message>>{},
       linksByPlatform: <String, int>{},
       linksSharedByUser: <String, int>{},
+      avgResponseTime: <String, int>{},
+      responseCount: <String, int>{},
     );
   }
 
