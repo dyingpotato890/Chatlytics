@@ -1,0 +1,15 @@
+const Set<String> stopWords = {
+  "about", "after", "again", "because", "before", "being", "below", "between",
+  "could", "doing", "doesnt", "doesn't", "during", "each", "first", "found",
+  "from", "having", "here", "herself", "himself", "into", "itself", "other",
+  "over", "same", "should", "since", "some", "such", "than", "this", "have", "that",
+  "them", "themselves", "there", "these", "they", "those", "through", "under",
+  "until", "very", "were", "what", "when", "where", "which", "while", "will",
+  "with", "would", "your", "yours", "yourself", "yourselves", "whose",
+  "whenever", "wherever", "however", "cannot", "nothing", "though", "still",
+  "might", "shouldn", "wasnt", "wasn't", "werent", "weren't",
+  "wouldnt", "wouldn't", "hasnt", "hasn't", "hadnt", "hadn't",
+  "havent", "haven't", "didnt", "didn't", "wont", "won't", "couldnt",
+  "couldn't", "shouldnt", "shouldn't", "isnt", "isn't", "their",
+  "mine", "myself", "ours", "ourselves", "hers", "theirs",
+};

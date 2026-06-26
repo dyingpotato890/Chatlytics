@@ -4,56 +4,34 @@ import 'package:chatlytics/models/message.dart';
 import 'package:chatlytics/models/streak_info.dart';
 import 'package:flutter_archive/flutter_archive.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:chatlytics/constants/cuss_words.dart';
+import 'package:chatlytics/constants/stop_words.dart';
 
 class Whatsapp {
   Map<String, List<Message>> messagesByDate = <String, List<Message>>{};
+  
+  static String normalizeWord(String word) =>
+      word.replaceAllMapped(RegExp(r'(.)\1{2,}'), (m) => m.group(1)!);
 
-  final Map<String, List<String>> cussWords = {
-    "english" : [
-        "fuck", "fucking", "fucked", "motherfucker", "motherfucking", 
-        "shit", "bullshit", "bitch", "bitches", "bastard", "bloody", 
-        "ass", "asses", "asshole", "assholes", "dick", "dicks", "pussy", "pussies", 
-        "crap", "crappy", "slut", "sluts", "dumbass", "jackass", "prick", 
-        "cunt", "cunts", "wanker", "twat", "jerk", "moron", "idiot", 
-        "fuckhead", "shithead", "dickhead", "cock", "cockhead", "arsehole", "bollocks"
-    ],
+  static final Set<String> normalizedCussWords =
+      allCussWords.map(normalizeWord).toSet();
 
-    "hindi" : [
-        "gandu", "bhenchod", "bhenchood", "madarchod", "madarchood", 
-        "chutiya", "chutiye", "randi", "randwa", "harami", "kamina", "kaminey", 
-        "launde", "launda", "lodu", "lodu", "ullu", "ullu ke pathe", 
-        "bhosdike", "bhosdiwala", "suar", "kutte", "kuttey", "kuttiya", 
-        "chod", "chodna", "chodu", "lavde", "lavda", "lavdya", 
-        "tera baap", "teri maa", "teri behen", "chodu"
-    ],
+  static final Set<String> normalizedMalayalamWords =
+      malayalamCussWords.map(normalizeWord).toSet();
 
-    "malayalam" : [
-        "myre", "myren", "myr", "mayre", "mayran", "thayoli", "thayoley", 
-        "funda", "fundagale", "punda", "pundachi", "pundachiye", "kunna", "kunne", 
-        "poori", "pooru", "poore", "pooran", "oomb", "oombi", "oomban", 
-        "oombiko", "oombikko", "oombiyan", "oombanmare", "oombanmar", 
-        "vaanam", "vaanathe", "kunj", "kunji", "pundakke", "myran",
-        "theetam", "theettam", "kandi", "andi"
-    ]
-  };
+  static final Set<String> normalizedHindiWords =
+      hindiCussWords.map(normalizeWord).toSet();
 
-  final List<String> stopWords = [
-    "about", "after", "again", "because", "before", "being", "below", "between",
-    "could", "doing", "doesnt", "doesn't", "during", "each", "first", "found",
-    "from", "having", "here", "herself", "himself", "into", "itself", "other",
-    "over", "same", "should", "since", "some", "such", "than", "this", "have", "that", 
-    "them", "themselves", "there", "these", "they", "those", "through", "under",
-    "until", "very", "were", "what", "when", "where", "which", "while", "will",
-    "with", "would", "your", "yours", "yourself", "yourselves", "whose",
-    "whenever", "wherever", "however", "cannot", "nothing", "though", "still",
-    "might", "shouldn", "wasnt", "wasn't", "werent", "weren't",
-    "wouldnt", "wouldn't", "hasnt", "hasn't", "hadnt", "hadn't", "doesnt",
-    "doesn't", "havent", "haven't", "didnt", "didn't", "wont", "won't", "couldnt",
-    "couldn't", "shouldnt", "shouldn't", "isnt", "isn't", "their",
+  bool isProfane(String word) =>
+      normalizedCussWords.contains(normalizeWord(word));
 
-    "mine", "myself", "ours", "ourselves", "your", "yours", "yourself", "yourselves",
-    "hers", "herself", "itself", "their", "theirs", "themselves", "whose"
-  ];
+  String cussLang(String word) {
+    final normalized = normalizeWord(word);
+    if (normalizedMalayalamWords.contains(normalized)) return 'malayalam';
+    if (normalizedHindiWords.contains(normalized)) return 'hindi';
+    return 'english';
+  }
+
 
   int totalLinks = 0;
 
@@ -146,24 +124,6 @@ class Whatsapp {
     }
 
     return DateTime(year, month, day);
-  }
-
-  String cussLang(String word) {
-    for (var cuss in cussWords.keys) {
-      if (cussWords[cuss]!.contains(word.toLowerCase())) {
-        return cuss;
-      }
-    }
-    return "english";
-  }
-
-  bool isCussWord(String word) {
-    for (var cuss in cussWords.values) {
-      if (cuss.contains(word.toLowerCase())) {
-        return true;
-      }
-    }
-    return false;
   }
 
   bool isCommonWord(String word) => stopWords.contains(word.toLowerCase());
@@ -510,22 +470,22 @@ class Whatsapp {
 
           messageData.wordCount += words.length;
 
-          // TODO: Add link counts
           for (String word in words) {
             // Filter short words
             if (word.length > 3 && !isCommonWord(word)) {
               messageData.mostUsedWords[word] =
                   (messageData.mostUsedWords[word] ?? 0) + 1;
 
-              if (isCussWord(word)) {
-                messageData.mostUsedCussWords[word] = 
-                  (messageData.mostUsedCussWords[word] ?? 0) + 1;
+              final normalized = normalizeWord(word);
+              if (isProfane(word)) {
+                messageData.mostUsedCussWords[normalized] =
+                  (messageData.mostUsedCussWords[normalized] ?? 0) + 1;
 
-                messageData.personMostUsedCussWords[sender] = 
-                  (messageData.personMostUsedCussWords[sender] ?? 0) + 1; 
+                messageData.personMostUsedCussWords[sender] =
+                  (messageData.personMostUsedCussWords[sender] ?? 0) + 1;
 
-                String lang = cussLang(word);
-                messageData.cussWordsByLanguage[lang] = 
+                final lang = cussLang(word);
+                messageData.cussWordsByLanguage[lang] =
                   (messageData.cussWordsByLanguage[lang] ?? 0) + 1;
               }
             }
@@ -728,8 +688,8 @@ class Whatsapp {
       activeDays: 0,
       participants: 0,
       mostUsedWords: <String, int>{},
-      cussWordsByLanguage: <String, int>{},
       mostUsedCussWords: <String, int>{},
+      cussWordsByLanguage: <String, int>{},
       personMostUsedCussWords: <String, int>{},
       mostUsedEmojies: <String, int>{},
       mostTalkedDays: <String, int>{},

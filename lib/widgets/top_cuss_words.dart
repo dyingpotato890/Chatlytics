@@ -438,18 +438,15 @@ class _TopCussWordsWidgetState extends State<TopCussWordsWidget> {
     );
   }
 
+
   Widget _buildLanguageBreakdownSection() {
     final Map<String, int> languageCounts = widget.messageData.cussWordsByLanguage;
-    
-    if (languageCounts.isEmpty) {
-      return const SizedBox.shrink();
-    }
 
-    // Sort languages by count
+    if (languageCounts.isEmpty) return const SizedBox.shrink();
+
     final sortedLanguages = languageCounts.entries.toList()
       ..sort((a, b) => b.value.compareTo(a.value));
 
-    // Calculate percentages
     final total = languageCounts.values.fold(0, (sum, count) => sum + count);
 
     return DecoratedBox(
@@ -471,11 +468,7 @@ class _TopCussWordsWidgetState extends State<TopCussWordsWidget> {
           children: [
             Row(
               children: const [
-                Icon(
-                  Icons.language_rounded,
-                  size: 18,
-                  color: ColorUtils.whatsappDarkGreen,
-                ),
+                Icon(Icons.language_rounded, size: 18, color: ColorUtils.whatsappDarkGreen),
                 SizedBox(width: 8),
                 Text(
                   "Language Distribution",
@@ -526,10 +519,7 @@ class _TopCussWordsWidgetState extends State<TopCussWordsWidget> {
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 4,
-                  ),
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                   child: Text(
                     "$percentage%",
                     style: const TextStyle(
@@ -550,10 +540,7 @@ class _TopCussWordsWidgetState extends State<TopCussWordsWidget> {
                   color: ColorUtils.whatsappDivider,
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: const SizedBox(
-                  height: 10,
-                  width: double.infinity,
-                ),
+                child: const SizedBox(height: 10, width: double.infinity),
               ),
               FractionallySizedBox(
                 widthFactor: normalized,
@@ -575,10 +562,7 @@ class _TopCussWordsWidgetState extends State<TopCussWordsWidget> {
           const SizedBox(height: 6),
           Text(
             "$count words",
-            style: const TextStyle(
-              fontSize: 13,
-              color: ColorUtils.whatsappSecondaryText,
-            ),
+            style: const TextStyle(fontSize: 13, color: ColorUtils.whatsappSecondaryText),
           ),
         ],
       ),
