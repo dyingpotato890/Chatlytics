@@ -58,6 +58,7 @@ class _HomePageState extends State<HomePage> {
     linksSharedByUser: <String, int>{},
     avgResponseTime: <String, int>{},
     responseCount: <String, int>{},
+    conversationStarters: <String, int>{},
   );
 
   @override

@@ -427,7 +427,10 @@ class Whatsapp {
       String weekDay = _getDayOfWeek(parsedDate);
 
       // Track unique days
-      uniqueDays.add(dayKey);
+      if (uniqueDays.add(dayKey)) {
+        messageData.conversationStarters[sender] =
+            (messageData.conversationStarters[sender] ?? 0) + 1;
+      }
       messageData.activeDays = uniqueDays.length;
 
       // Most talked days
@@ -775,6 +778,7 @@ class Whatsapp {
       linksSharedByUser: <String, int>{},
       avgResponseTime: <String, int>{},
       responseCount: <String, int>{},
+      conversationStarters: <String, int>{},
     );
   }
 

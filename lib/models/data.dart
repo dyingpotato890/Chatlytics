@@ -28,6 +28,7 @@ class Data {
   Map<String, int> linksSharedByUser;
   Map<String, int> avgResponseTime;
   Map<String, int> responseCount;
+  Map<String, int> conversationStarters;
 
   Data({
     required this.messageCount,
@@ -56,5 +57,6 @@ class Data {
     required this.linksSharedByUser,
     required this.avgResponseTime,
     required this.responseCount,
+    required this.conversationStarters,
   });
 }
