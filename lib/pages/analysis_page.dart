@@ -31,113 +31,129 @@ class AnalysisPage extends StatefulWidget {
 }
 
 class _AnalysisPageState extends State<AnalysisPage> {
-  late final List<_PanelItem> _panelItems;
+  late final List<_Section> _sections;
+  final Set<String> _collapsed = {};
 
   @override
   void initState() {
     super.initState();
 
-    _panelItems = [
-      _PanelItem(
-        title: "Messages per User",
-        icon: Icons.people_alt_rounded,
-        builder: () => MessagesPerUserWidget(messageData: widget.messageData),
+    _sections = [
+      _Section(
+        title: 'PEOPLE & BEHAVIOUR',
+        panels: [
+          _PanelItem(
+            title: 'Messages per User',
+            icon: Icons.people_alt_rounded,
+            builder: () => MessagesPerUserWidget(messageData: widget.messageData),
+          ),
+          _PanelItem(
+            title: 'Response Time',
+            icon: Icons.timer_outlined,
+            builder: () => ResponseTimeWidget(messageData: widget.messageData),
+          ),
+          _PanelItem(
+            title: 'Conversation Starters',
+            icon: Icons.wb_sunny_rounded,
+            builder: () => ConversationStarterWidget(messageData: widget.messageData),
+          ),
+          _PanelItem(
+            title: 'Deleted Messages',
+            icon: Icons.delete_outline_rounded,
+            builder: () => MessageBreakdownWidget(messageData: widget.messageData),
+          ),
+        ],
       ),
 
-      _PanelItem(
-        title: "Response Time",
-        icon: Icons.timer_outlined,
-        builder: () => ResponseTimeWidget(messageData: widget.messageData),
+      _Section(
+        title: 'CONTENT',
+        panels: [
+          _PanelItem(
+            title: 'Top 100 Words',
+            icon: Icons.text_fields_rounded,
+            builder: () => TopWordsWidget(messageData: widget.messageData),
+          ),
+          _PanelItem(
+            title: 'Top Cuss Words',
+            icon: Icons.warning_rounded,
+            builder: () => TopCussWordsWidget(messageData: widget.messageData),
+          ),
+          _PanelItem(
+            title: 'Emoji Analysis',
+            icon: Icons.emoji_emotions_rounded,
+            builder: () => EmojiAnalysisWidget(messageData: widget.messageData),
+          ),
+          _PanelItem(
+            title: 'Link Analysis',
+            icon: Icons.link_rounded,
+            builder: () => LinkAnalysisWidget(messageData: widget.messageData),
+          ),
+          _PanelItem(
+            title: 'AI Daily Analysis',
+            icon: Icons.psychology_rounded,
+            builder: () => AIDailyAnalysisWidget(messageData: widget.messageData),
+          ),
+        ],
       ),
 
-      _PanelItem(
-        title: "Conversation Starters",
-        icon: Icons.wb_sunny_rounded,
-        builder: () => ConversationStarterWidget(messageData: widget.messageData),
-      ),
-
-      _PanelItem(
-        title: "Deleted Messages",
-        icon: Icons.delete_outline_rounded,
-        builder: () => MessageBreakdownWidget(messageData: widget.messageData),
-      ),
-
-      _PanelItem(
-        title: "Link Analysis",
-        icon: Icons.link_rounded,
-        builder: () => LinkAnalysisWidget(messageData: widget.messageData),
-      ),
-
-      _PanelItem(
-        title: "Chat Streaks",
-        icon: Icons.star_rounded,
-        builder: () => DayStreakWidget(messageData: widget.messageData),
-      ),
-
-      _PanelItem(
-        title: "First & Last Messages",
-        icon: Icons.people_alt_rounded,
-        builder: () => FirstLastMessageWidget(messageData: widget.messageData),
-      ),
-
-      _PanelItem(
-        title: "Top 100 Words",
-        icon: Icons.text_fields_rounded,
-        builder: () => TopWordsWidget(messageData: widget.messageData),
-      ),
-
-      _PanelItem(
-        title: "Top Cuss Words",
-        icon: Icons.warning_rounded,
-        builder: () => TopCussWordsWidget(messageData: widget.messageData),
-      ),
-
-      _PanelItem(
-        title: "Emoji Analysis",
-        icon: Icons.emoji_emotions_rounded,
-        builder: () => EmojiAnalysisWidget(messageData: widget.messageData),
-      ),
-
-      _PanelItem(
-        title: "Hourly Activity",
-        icon: Icons.schedule_rounded,
-        builder: () => MostTalkedHoursWidget(messageData: widget.messageData),
-      ),
-
-      _PanelItem(
-        title: "Most Active Days",
-        icon: Icons.calendar_today_rounded,
-        builder: () => MostTalkedDaysWidget(messageData: widget.messageData),
-      ),
-
-      _PanelItem(
-        title: "Weekly Analysis",
-        icon: Icons.date_range_rounded,
-        builder: () => ChatByWeekWidget(messageData: widget.messageData),
-      ),
-
-      _PanelItem(
-        title: "Monthly Activity",
-        icon: Icons.date_range_rounded,
-        builder: () => ChatByMonthWidget(messageData: widget.messageData),
-      ),
-
-      _PanelItem(
-        title: "Yearly Activity",
-        icon: Icons.date_range_rounded,
-        builder: () => ChatByYearWidget(messageData: widget.messageData),
-      ),
-
-      _PanelItem(
-        title: "AI Daily Analysis",
-        icon: Icons.psychology_rounded,
-        builder: () => AIDailyAnalysisWidget(messageData: widget.messageData),
+      _Section(
+        title: 'ACTIVITY',
+        panels: [
+          _PanelItem(
+            title: 'First & Last Messages',
+            icon: Icons.chat_bubble_outline_rounded,
+            builder: () => FirstLastMessageWidget(messageData: widget.messageData),
+          ),
+          _PanelItem(
+            title: 'Hourly Activity',
+            icon: Icons.schedule_rounded,
+            builder: () => MostTalkedHoursWidget(messageData: widget.messageData),
+          ),
+          _PanelItem(
+            title: 'Most Active Days',
+            icon: Icons.calendar_today_rounded,
+            builder: () => MostTalkedDaysWidget(messageData: widget.messageData),
+          ),
+          _PanelItem(
+            title: 'Weekly Analysis',
+            icon: Icons.date_range_rounded,
+            builder: () => ChatByWeekWidget(messageData: widget.messageData),
+          ),
+          _PanelItem(
+            title: 'Monthly Activity',
+            icon: Icons.date_range_rounded,
+            builder: () => ChatByMonthWidget(messageData: widget.messageData),
+          ),
+          _PanelItem(
+            title: 'Yearly Activity',
+            icon: Icons.date_range_rounded,
+            builder: () => ChatByYearWidget(messageData: widget.messageData),
+          ),
+          _PanelItem(
+            title: 'Chat Streaks',
+            icon: Icons.star_rounded,
+            builder: () => DayStreakWidget(messageData: widget.messageData),
+          ),
+        ],
       ),
     ];
   }
 
+  List<dynamic> _flatItems() {
+    final result = <dynamic>[];
+    for (final section in _sections) {
+      result.add(section);
+      if (!_collapsed.contains(section.title)) {
+        result.addAll(section.panels);
+      }
+    }
+    return result;
+  }
+
   @override
   Widget build(BuildContext context) {
+    final items = _flatItems();
+
     return Scaffold(
       appBar: AppBar(
         title: const Text(
@@ -165,9 +181,8 @@ class _AnalysisPageState extends State<AnalysisPage> {
       body: SafeArea(
         child: ListView.builder(
           physics: const BouncingScrollPhysics(),
-          itemCount: _panelItems.length + 3,
+          itemCount: items.length + 2,
           itemBuilder: (context, index) {
-            // Header with date range
             if (index == 0) {
               return Container(
                 padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
@@ -183,35 +198,17 @@ class _AnalysisPageState extends State<AnalysisPage> {
               );
             }
 
-            // Overview widget
             if (index == 1) {
               return OverviewWidget(messageData: widget.messageData);
             }
 
-            // Section title
-            if (index == 2) {
-              return Padding(
-                padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
-                child: Row(
-                  children: const [
-                    Text(
-                      "DETAILED INSIGHTS",
-                      style: TextStyle(
-                        color: Color(0xFF075E54),
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: 1.0,
-                      ),
-                    ),
-                  ],
-                ),
-              );
+            final item = items[index - 2];
+
+            if (item is _Section) {
+              return _buildSectionHeader(item);
             }
 
-            // Panel items
-            final panelIndex = index - 3;
-            final panel = _panelItems[panelIndex];
-
+            final panel = item as _PanelItem;
             return PanelWidget(
               title: panel.title,
               color: ColorUtils.whatsappLightBackground,
@@ -223,6 +220,49 @@ class _AnalysisPageState extends State<AnalysisPage> {
       ),
     );
   }
+
+  Widget _buildSectionHeader(_Section section) {
+    final isCollapsed = _collapsed.contains(section.title);
+
+    return GestureDetector(
+      onTap: () => setState(() {
+        if (isCollapsed) {
+          _collapsed.remove(section.title);
+        } else {
+          _collapsed.add(section.title);
+        }
+      }),
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(20, 20, 16, 8),
+        child: Row(
+          children: [
+            Text(
+              section.title,
+              style: const TextStyle(
+                color: Color(0xFF075E54),
+                fontSize: 13,
+                fontWeight: FontWeight.bold,
+                letterSpacing: 1.2,
+              ),
+            ),
+            const Spacer(),
+            Icon(
+              isCollapsed ? Icons.expand_more_rounded : Icons.expand_less_rounded,
+              color: const Color(0xFF075E54),
+              size: 20,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _Section {
+  final String title;
+  final List<_PanelItem> panels;
+
+  const _Section({required this.title, required this.panels});
 }
 
 class _PanelItem {
@@ -230,5 +270,5 @@ class _PanelItem {
   final IconData icon;
   final Widget Function() builder;
 
-  _PanelItem({required this.title, required this.icon, required this.builder});
+  const _PanelItem({required this.title, required this.icon, required this.builder});
 }

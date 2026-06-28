@@ -1,5 +1,6 @@
 import 'package:chatlytics/models/data.dart';
 import 'package:chatlytics/widgets/colors.dart';
+import 'package:chatlytics/widgets/show_more_button.dart';
 import 'package:flutter/material.dart';
 import 'dart:math';
 
@@ -49,6 +50,8 @@ class _TopCussWordsWidgetState extends State<TopCussWordsWidget> {
   late final int _totalCussWordCount;
   late final bool _hasCussWords;
   late final double _maxCount;
+  bool _showAll = false;
+  static const int _initialCount = 7;
 
   // Pre-computed color constants with red/warning theme
   static const List<Color> _medalColors = [
@@ -242,6 +245,9 @@ class _TopCussWordsWidgetState extends State<TopCussWordsWidget> {
   }
 
   Widget _buildRemainingCussWordsSection() {
+    final visible = _showAll ? _remainingCussWords : _remainingCussWords.take(_initialCount).toList();
+    final hasMore = _remainingCussWords.length > _initialCount;
+
     return DecoratedBox(
       decoration: BoxDecoration(
         color: Colors.white,
@@ -269,10 +275,15 @@ class _TopCussWordsWidgetState extends State<TopCussWordsWidget> {
             ),
             const SizedBox(height: 12),
             Column(
-              children: _remainingCussWords
-                  .map((wordData) => _buildCussWordProgressBar(wordData))
-                  .toList(),
+              children: visible.map((wordData) => _buildCussWordProgressBar(wordData)).toList(),
             ),
+            if (hasMore)
+              ShowMoreButton(
+                showAll: _showAll,
+                total: _remainingCussWords.length,
+                initialCount: _initialCount,
+                onTap: () => setState(() => _showAll = !_showAll),
+              ),
           ],
         ),
       ),

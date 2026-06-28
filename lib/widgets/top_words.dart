@@ -1,5 +1,6 @@
 import 'package:chatlytics/models/data.dart';
 import 'package:chatlytics/widgets/colors.dart';
+import 'package:chatlytics/widgets/show_more_button.dart';
 import 'package:flutter/material.dart';
 import 'dart:math';
 
@@ -49,6 +50,8 @@ class _TopWordsWidgetState extends State<TopWordsWidget> {
   late final int _totalWordCount;
   late final bool _hasWords;
   late final double _maxCount;
+  bool _showAll = false;
+  static const int _initialCount = 10;
 
   // Pre-computed color constants
   static const List<Color> _medalColors = [
@@ -172,6 +175,9 @@ class _TopWordsWidgetState extends State<TopWordsWidget> {
   }
 
   Widget _buildRemainingWordsSection() {
+    final visible = _showAll ? _remainingWords : _remainingWords.take(_initialCount).toList();
+    final hasMore = _remainingWords.length > _initialCount;
+
     return DecoratedBox(
       decoration: BoxDecoration(
         color: Colors.white,
@@ -199,10 +205,15 @@ class _TopWordsWidgetState extends State<TopWordsWidget> {
             ),
             const SizedBox(height: 12),
             Column(
-              children: _remainingWords
-                  .map((wordData) => _buildWordProgressBar(wordData))
-                  .toList(),
+              children: visible.map((wordData) => _buildWordProgressBar(wordData)).toList(),
             ),
+            if (hasMore)
+              ShowMoreButton(
+                showAll: _showAll,
+                total: _remainingWords.length,
+                initialCount: _initialCount,
+                onTap: () => setState(() => _showAll = !_showAll),
+              ),
           ],
         ),
       ),

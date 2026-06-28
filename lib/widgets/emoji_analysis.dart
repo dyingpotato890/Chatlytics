@@ -1,5 +1,6 @@
 import 'package:chatlytics/models/data.dart';
 import 'package:chatlytics/widgets/colors.dart';
+import 'package:chatlytics/widgets/show_more_button.dart';
 import 'package:flutter/material.dart';
 
 class _EmojiData {
@@ -42,6 +43,8 @@ class _EmojiAnalysisWidgetState extends State<EmojiAnalysisWidget> {
   late final List<_EmojiData> _emojiList;
   late final _EmojiStats _stats;
   late final bool _hasEmojis;
+  bool _showAll = false;
+  static const int _initialCount = 15;
 
   @override
   void initState() {
@@ -130,29 +133,44 @@ class _EmojiAnalysisWidgetState extends State<EmojiAnalysisWidget> {
         const SizedBox(height: 20),
 
         // Emoji grid with modern look
-        _hasEmojis
-            ? Wrap(
-                spacing: 12,
-                runSpacing: 16,
-                alignment: WrapAlignment.spaceEvenly,
-                children: List.generate(
-                  _emojiList.length,
-                  (index) => _buildEmojiItem(_emojiList[index]),
-                ),
-              )
-            : const Center(
-                child: Padding(
-                  padding: EdgeInsets.symmetric(vertical: 30.0),
-                  child: Text(
-                    "No emojis found in chat",
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: ColorUtils.whatsappSecondaryText,
-                      fontStyle: FontStyle.italic,
-                    ),
+        if (_hasEmojis) ...[
+          Builder(
+            builder: (context) {
+              final visible = _showAll ? _emojiList : _emojiList.take(_initialCount).toList();
+              final hasMore = _emojiList.length > _initialCount;
+              return Column(
+                children: [
+                  Wrap(
+                    spacing: 12,
+                    runSpacing: 16,
+                    alignment: WrapAlignment.spaceEvenly,
+                    children: visible.map((e) => _buildEmojiItem(e)).toList(),
                   ),
+                  if (hasMore)
+                    ShowMoreButton(
+                      showAll: _showAll,
+                      total: _emojiList.length,
+                      initialCount: _initialCount,
+                      onTap: () => setState(() => _showAll = !_showAll),
+                    ),
+                ],
+              );
+            },
+          ),
+        ] else
+          const Center(
+            child: Padding(
+              padding: EdgeInsets.symmetric(vertical: 30.0),
+              child: Text(
+                "No emojis found in chat",
+                style: TextStyle(
+                  fontSize: 16,
+                  color: ColorUtils.whatsappSecondaryText,
+                  fontStyle: FontStyle.italic,
                 ),
               ),
+            ),
+          ),
 
         const SizedBox(height: 20),
 
